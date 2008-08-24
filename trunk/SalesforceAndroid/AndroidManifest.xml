@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.android">
+    <!-- Database permission -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    
+    <!-- Mandatory tag to connect the internet -->
+	<uses-permission android:name="android.permission.INTERNET" />
+	
+	<!-- Activity -->
+    <application android:icon="@drawable/salesforce_cube">
+        <activity android:name=".main.SalesforceAndroid" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".salesforce.sobject.SObjectList" android:label="@string/main_menu"></activity>   
+        <!-- <activity android:name=".sobject.SFDCTestList" android:label="Salesforce Android"></activity>  -->
+		<!-- list  -->
+        <activity android:name=".salesforce.viewer.DocumentViewer" android:label="@string/document_viewer"></activity>
+        <activity android:name=".salesforce.sobject.AccountList" android:label="@string/acc_list"></activity>
+        <!--  <activity android:name=".sobject.ContactList" android:label="@string/con_list"></activity>  -->
+        <!--  <activity android:name=".sobject.OpportunityList" android:label="@string/opp_list"></activity>  -->
+        <!--  <activity android:name=".sobject.CaseList" android:label="@string/case_list"></activity>  -->
+        <!--  <activity android:name=".sobject.EventList" android:label="@string/event_list"></activity>  -->
+        <!-- <activity android:name=".sobject.TaskList" android:label="@string/task_list"></activity>-->
+        <activity android:name=".salesforce.sobject.AccountInfo" android:label="@string/acc_info"></activity>
+        <!-- <activity android:name=".sobject.EventInfo" android:label="@string/event_info"></activity>-->
+        <activity android:name=".salesforce.viewer.ChartViewer" android:label="Online DashBoard"></activity>
+        <activity android:name=".salesforce.frame.TabMenuMaker" android:label="Tab View"></activity>
+        
+    </application>
+</manifest> 
