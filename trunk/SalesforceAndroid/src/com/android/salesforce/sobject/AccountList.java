@@ -30,6 +30,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AccountList extends ListActivity {
 	private static final String TAG = "AccountList";
@@ -75,7 +76,10 @@ public class AccountList extends ListActivity {
 								StaticInformation.RECORD_ID_LENGTH));
 						intent.setClass(AccountList.this,
 								com.android.salesforce.sobject.AccountInfo.class);
-						startActivity(intent);
+						StaticInformation.isList = false;
+						
+						Toast.makeText(AccountList.this, "Dynamic Page Jump is to be implemented", Toast.LENGTH_LONG).show();
+						//startActivity(intent);
 					}
 				});
 
@@ -190,9 +194,9 @@ public class AccountList extends ListActivity {
 			intent.putExtra("id", strings[position].substring(0, 18));
 			intent.setClass(AccountList.this,
 					com.android.salesforce.sobject.AccountInfo.class);
+			StaticInformation.isList = false;
 			startActivity(intent);
 		} catch (Exception ex) {
-
 			Log.v(TAG, ex.toString());
 		}
 	}

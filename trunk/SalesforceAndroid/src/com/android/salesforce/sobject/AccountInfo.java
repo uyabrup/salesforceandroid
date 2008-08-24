@@ -14,6 +14,7 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.R;
 import com.android.salesforce.util.SObjectDB;
@@ -31,6 +32,8 @@ public class AccountInfo extends SObject implements SObjectIF {
 		@Override
 	    protected void onCreate(Bundle icicle) {
 			super.onCreate(icicle);
+			Toast.makeText(AccountInfo.this, "Tabnaized Frame is to be implemented", Toast.LENGTH_LONG).show();
+
 	        setContentView(R.layout.detailinfo_array);
 	        Bundle bundle = getIntent().getExtras();
 			

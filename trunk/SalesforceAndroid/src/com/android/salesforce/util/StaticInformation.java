@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 /**
  * This class is salesforce utility class. Analyze xml from salesforce query, describe, etc.
- * @author Fumiko
+ * @author Dai Odahara
  *
  */
 public class StaticInformation {
@@ -26,6 +26,10 @@ public class StaticInformation {
 	public static String USER_PW = "sfdcj12345bqdqRDDd19FTdlOwyBfe94pLZ";
 	public static String SESSION_ID;
 	public static String API_SERVER_URL;
+	public static boolean isLoaded = false;
+	public static boolean isList = true;
+//	public static boolean isDetail = false;
+	
 	public static final String SOAP_ACTION = "\"\"";
 	public static final String LOGIN_SERVER_URL = "https://www.salesforce.com/services/Soap/c/13.0";
 	public static final String NAMESPACE = "urn:enterprise.soap.sforce.com";	

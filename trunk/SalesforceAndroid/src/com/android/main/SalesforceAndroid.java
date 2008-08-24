@@ -92,8 +92,8 @@ public class SalesforceAndroid extends Activity implements
 		/** setting user id/pw */
 		UserId = (EditText) findViewById(R.id.salesforce_user_id);
 		UserPassword = (EditText) findViewById(R.id.salesforce_user_password);
-		UserId.setText("dai.odahara@gmail.com");
-		UserPassword.setText("12345");
+		UserId.setText("demo id/pw is hard coded");
+		UserPassword.setText("So Click 'Login'!");
 
 		loginButton = (Button) findViewById(R.id.salesforce_login);
 

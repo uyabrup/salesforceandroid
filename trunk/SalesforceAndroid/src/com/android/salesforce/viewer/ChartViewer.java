@@ -5,11 +5,13 @@
 package com.android.salesforce.viewer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.android.R;
 import com.android.google.operation.ChartAPICaller;
+import com.android.salesforce.util.StaticInformation;
 
 import android.app.Activity;
 import android.graphics.BitmapFactory;
@@ -21,12 +23,13 @@ import android.widget.ImageView;
  * This class is responsible for dashboard. At present. it calls google chart api with hard-coded parameters.
  * In future, it will read parameters dynamically from UI or salesforce.
  * 
+ * TODO changed to dynamic chart viewer
  * @author Dai Odahara
  * 
  */
 public class ChartViewer extends Activity {
 	private static final String TAG = "DashBoardList";
-
+	
 	/**
 	 * Called when the activity is first created. TODO access to google chart
 	 * api server dynamically
@@ -36,6 +39,7 @@ public class ChartViewer extends Activity {
 		super.onCreate(icicle);
 		setContentView(R.layout.dashboard_array);
 
+		//if(StaticInformation.isLoaded)return;
 		try {
 			ChartAPICaller ca = new ChartAPICaller();
 			URL lineUrl = new URL(ca.getLineChartURL());
@@ -49,6 +53,7 @@ public class ChartViewer extends Activity {
 			getAndShowImage(gomUrl, R.id.dashboard2);
 			getAndShowImage(pieUrl, R.id.dashboard3);
 
+			//StaticInformation.isLoaded = true;
 		} catch (MalformedURLException ex) {
 			Log.v(TAG, ex.toString());
 		}
