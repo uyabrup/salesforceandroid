@@ -142,7 +142,7 @@
 			    android:layout_width="fill_parent"
 			    android:layout_height="fill_parent"
 			    android:orientation="vertical">
-				   <TextView
+				    <TextView
 					  	    android:id="@id/testing"
 					        android:layout_width="fill_parent"
 					        android:layout_height="wrap_content"
@@ -154,6 +154,7 @@
 					        android:layout_width="fill_parent"
 					        android:layout_height="wrap_content"
 					        android:layout_centerHorizontal="true"
+					        android:layout_marginLeft="100px"
 					        android:layout_marginTop="8dip" />
 				   <TextView
 					  	    android:id="@id/testing"
@@ -161,6 +162,7 @@
 					        android:layout_height="wrap_content"
 					        android:paddingBottom="6dip"
 					        android:layout_marginTop="4dip"
+					        android:layout_marginLeft="100px"
 					        android:textSize="24dip"
 					        android:text="" />
 			   </LinearLayout>     

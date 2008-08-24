@@ -30,6 +30,7 @@
         <!-- <activity android:name=".sobject.EventInfo" android:label="@string/event_info"></activity>-->
         <activity android:name=".salesforce.viewer.ChartViewer" android:label="Online DashBoard"></activity>
         <activity android:name=".salesforce.frame.TabMenuMaker" android:label="Tab View"></activity>
+        <activity android:name=".salesforce.frame.CalendarComponent" android:label="Calendar"></activity>
         
     </application>
 </manifest> 
