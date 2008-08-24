@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Salesforce Android</string>
+    <string name="main_menu">Main Menu</string>
+    <string name="menu_sfdc_login">Salesforce Login</string>
+    <!-- ============================== -->
+    <!--  app/search examples strings  -->
+    <!-- ============================== -->
+    <string name="label_salesforce_user_id">"Id: "</string>
+    <string name="label_salesforce_user_password">"pw: "</string>
+    <string name="label_salesforce_login">Login</string>
+    
+    <!-- Common -->
+    <string name="sobject_package_name">com.android.apex.sobject.</string>
+    
+    <!-- Main menu -->
+    <string name="message_on_main_menu">Enjoy!! Salesforce Android</string>
+    <string name="sobjectname">SObjectName</string>
+    <string name="intent">intent</string>
+    <string name="message_on_login_nemu_1">Freedom</string>
+    <string name="message_on_login_nemu_2">is nothing else but</string>
+    <string name="message_on_login_nemu_3">a chance to be better.</string>
+    <string name="message_on_login_nemu_4">— Albert Camus</string>
+    
+    <!-- Login Message -->
+    <string name="message_while_login">Logging in...</string>
+    
+    <!-- List message -->
+    <string name="sobjectlist_postfix">List</string>
+    <string name="document_viewer">Document Viewer</string>
+    <string name="acc_list">Account List</string>
+    <string name="con_list">Contact List</string>
+    <string name="case_list">Case List</string>
+    <string name="opp_list">Opportunity List</string>
+    <string name="task_list">Task List</string>
+    <string name="event_list">Event List</string>
+
+	<!-- Detail Message -->
+	<string name="event_info">Event Detail</string>
+	<string name="acc_info">Account Detail</string>
+	    
+    <!-- forwarding target -->
+    <string name="forwarding_target">Fowarding Target</string>
+</resources>
