@@ -6,9 +6,10 @@
     <!-- ============================== -->
     <!--  app/search examples strings  -->
     <!-- ============================== -->
-    <string name="label_salesforce_user_id">"Id: "</string>
+    <string name="label_salesforce_user_id">"Id:  "</string>
     <string name="label_salesforce_user_password">"pw: "</string>
-    <string name="label_salesforce_login">Login</string>
+    <string name="label_salesforce_login">Login</string>  
+    <string name="label_salesforce_refresh">Refresh</string>
     
     <!-- Common -->
     <string name="sobject_package_name">com.android.apex.sobject.</string>
@@ -38,7 +39,29 @@
 	<!-- Detail Message -->
 	<string name="event_info">Event Detail</string>
 	<string name="acc_info">Account Detail</string>
+	<string name="opp_info">Opportunity Detail</string>
 	    
     <!-- forwarding target -->
     <string name="forwarding_target">Fowarding Target</string>
+    
+    <!-- for note pad -->
+        <string name="menu_delete">Delete</string>
+    <string name="menu_insert">Add note</string>
+    <string name="menu_revert">Revert</string>
+    <string name="menu_discard">Discard</string>
+
+    <string name="resolve_edit">Edit note</string>
+    <string name="resolve_title">Edit title</string>  
+
+    <string name="title_create">Create note</string>
+    <string name="title_edit">Edit note</string>
+    <string name="title_notes_list">Note pad</string>   
+    <string name="title_note">Note</string>  
+    <string name="title_edit_title">Note title:</string>  
+
+    <string name="button_ok">OK</string>  
+
+    <string name="error_title">Error</string>
+    <string name="error_message">Error loading note</string>
+    
 </resources>
