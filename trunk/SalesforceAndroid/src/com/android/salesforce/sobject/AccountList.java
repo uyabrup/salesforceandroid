@@ -18,6 +18,9 @@ import com.android.salesforce.util.StaticInformation;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -34,7 +37,8 @@ import android.widget.Toast;
 
 public class AccountList extends ListActivity {
 	private static final String TAG = "AccountList";
-	private HashMap<String, String> idAndNameMap;
+	private static final String SOBJECT_TYPE = "Account";
+	//private HashMap<String, String> idAndNameMap;
 	private String[] allAccs;
 	private String[] autoAccs;
 
@@ -43,43 +47,68 @@ public class AccountList extends ListActivity {
 		super.onCreate(icicle);
 		setContentView(R.layout.autocomplete2);
 
+		ListView lv = (ListView) findViewById(android.R.id.list);
+		ColorDrawable dw = new ColorDrawable(0xFFFFFFFE);
+		
+		lv.setBackgroundColor(0xFFECECFF);
+		lv.setFocusableInTouchMode(false);
+
+		lv.setDivider(dw);
+		lv.setDividerHeight(5);
+		
 		/** getting from acc list from temp DB */
-		idAndNameMap = new HashMap<String, String>();
+		List<HashMap<String, String>> myData = getData2();
 
-		List<HashMap<String, String>> myData = getData();
-
-		ListAdapter one_list_adapter = new ExtendedAdapter(this, myData,
+		ExtendedAdapter one_list_adapter = new ExtendedAdapter(this, myData,
 				R.layout.one_line_list, new String[] { "value" },
 				new int[] { R.id.one_of_oneline });
 
 		setListAdapter(one_list_adapter);
 
-		autoAccs = new String[allAccs.length];
-		for (int i = 0; i < allAccs.length; i++) {
-			autoAccs[i] = allAccs[i].substring(StaticInformation.RECORD_ID_LENGTH + 1, allAccs[i].length());
-			Log.v(TAG, "name:" + autoAccs[i]);
+		StringBuffer temp = new StringBuffer();
+		for (String s : allAccs) {
+			//autoAccs[i] = allAccs[i].substring(StaticInformation.RECORD_ID_LENGTH + 1, allAccs[i].length());
+			temp.append( s.substring(StaticInformation.RECORD_ID_LENGTH + 1, s.length()) ).append("/");
+			//Log.v(TAG, "name1:" + s.substring(StaticInformation.RECORD_ID_LENGTH + 1, s.length()));
 		}
 
+		autoAccs = temp.toString().split("/");
+		
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_dropdown_item_1line, autoAccs);
+		//ExtendedArrayAdapter adapter = new ExtendedArrayAdapter(this,
+					android.R.layout.simple_dropdown_item_1line, autoAccs);
 
 		AutoCompleteTextView autoCompTextView = (AutoCompleteTextView) findViewById(R.id.auto_complete_view);
-
+		
+		
 		autoCompTextView
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 					public void onItemClick(AdapterView<?> parent, View view,
 							int position, long id) {
 						Intent intent = new Intent();
-						// Log.v(TAG, "id : " + accs[position].substring(0,
-						// 18));
-						intent.putExtra("id", autoAccs[position].substring(0,
-								StaticInformation.RECORD_ID_LENGTH));
+						TextView tv = (TextView)view;
+						//Log.v(TAG, "in : " + tv.getText());
+						String name = tv.getText().toString();
+						
+						Set<Entry<String, HashMap>> se = SObjectDB.SOBJECT_DB.get(SOBJECT_TYPE).entrySet();
+						
+						for (Map.Entry<String, HashMap> e : se) {
+							HashMap hm = e.getValue();
+							if(!hm.get("SObjectType").equals(SOBJECT_TYPE))continue;
+							String value = (String)hm.get("Name");
+							if(name.equals(value)) {
+								intent.putExtra("Id", e.getKey());
+								break;
+							}
+						}
+
 						intent.setClass(AccountList.this,
 								com.android.salesforce.sobject.AccountInfo.class);
-						StaticInformation.isList = false;
+						//StaticInformation.isList = false;
 						
-						Toast.makeText(AccountList.this, "Dynamic Page Jump is to be implemented", Toast.LENGTH_LONG).show();
-						//startActivity(intent);
+						//Toast.makeText(AccountList.this, "Dynamic Page Jump is to be implemented", Toast.LENGTH_LONG).show();
+						startActivity(intent);
+						
 					}
 				});
 
@@ -88,7 +117,8 @@ public class AccountList extends ListActivity {
 		Log.v(TAG, "Finish Loading");
 	}
 
-	public class ExtendedArrayAdapter extends ArrayAdapter<String> {
+	
+	public class ExtendedArrayAdapter<String> extends ArrayAdapter<String> {
 		private Context mContext;
 
 		public ExtendedArrayAdapter(Context context, int textViewResourceId,
@@ -106,6 +136,7 @@ public class AccountList extends ListActivity {
 				tv = (TextView) convertView;
 			}
 
+			/**
 			if ('|' != autoAccs[position].charAt(18)) {
 				Log.e(TAG, "Error occurs. CharAt(18) is NOT '|'");
 				return null;
@@ -116,12 +147,18 @@ public class AccountList extends ListActivity {
 							.length()));
 			tv.setText(autoAccs[position].substring(StaticInformation.RECORD_ID_LENGTH + 1, autoAccs[position]
 					.length()));
-			tv.setTextSize(22);
+					*/
+			tv.setTextColor(0xFFFFFFFF);
+			tv.setText(autoAccs[position]);
+			tv.setBackgroundColor(0xFFB0C4DE);
+			tv.setFocusable(false);
+			tv.setTextSize(16);
 			return tv;
 		}
 
 	}
-
+	
+	
 	public class ExtendedAdapter extends SimpleAdapter {
 		private Context mContext;
 
@@ -140,21 +177,57 @@ public class AccountList extends ListActivity {
 				tv = (TextView) convertView;
 			}
 
-			if ('|' != allAccs[position].charAt(18)) {
+			if ('|' != allAccs[position].charAt(StaticInformation.RECORD_ID_LENGTH)) {
 				Log.e(TAG, "Error occurs. CharAt(18) is NOT '|'");
 				return null;
 			}
 			// String temp[] = accs[position].split("|");
 			// Log.v(TAG, "name : " + accs[position].substring(19,
 			// accs[position].length()));
-			tv.setText(allAccs[position].substring(19, allAccs[position]
+			//Log.v(TAG, allAccs[position].substring(StaticInformation.RECORD_ID_LENGTH + 1, allAccs[position]
+			//		.length()));
+			tv.setText(allAccs[position].substring(StaticInformation.RECORD_ID_LENGTH + 1, allAccs[position]
 					.length()));
-			tv.setTextSize(22);
+			tv.setTextSize(16);
+			tv.setBackgroundColor(0xFFEAEAFF);
+			tv.setTextColor(0xFF000000);
 			return tv;
 		}
 
 	}
 
+	private List<HashMap<String, String>> getData2() {
+		List<HashMap<String, String>> ret = new ArrayList<HashMap<String, String>>();
+		StringBuffer acc = new StringBuffer();
+		Set<Entry<String, HashMap>> se = SObjectDB.SOBJECT_DB.get(SOBJECT_TYPE).entrySet();
+		
+		for (Map.Entry<String, HashMap> e : se) {
+			if(!e.getValue().get("SObjectType").equals(SOBJECT_TYPE))continue;
+			
+			HashMap<String, String> temp = new HashMap<String, String>();
+			//String temp = (String)(e.getValue().get("Name"));
+			String id = e.getKey();
+			String value = (String)e.getValue().get("Name");
+			
+			temp.put("value", id + "|" + value);
+			temp.put(value, id + "|" + value);
+			
+			ret.add(temp);
+			acc.append(id + "|" + value).append("/");
+			
+		}
+		allAccs = acc.toString().split("/");
+		/*
+		for(String s : allAccs) {
+			Log.v(TAG, "a one:" + s);
+		}
+		*/
+
+		return ret; 
+	
+	}
+	
+	/**
 	private List<HashMap<String, String>> getData() {
 		List<HashMap<String, String>> myData = new ArrayList<HashMap<String, String>>();
 		Set<Entry<String, String>> se = SObjectDB.AccountIdAndNameMap
@@ -170,13 +243,16 @@ public class AccountList extends ListActivity {
 		allAccs = acc.toString().split("/");
 		return myData;
 	}
+	
 
 	protected void addItem(List<HashMap<String, String>> data, String id,
 			String value) {
 		idAndNameMap.put("value", id + "|" + value);
 		idAndNameMap.put(value, id + "|" + value);
+		Log.v(TAG, "value : " + value);
 		data.add(idAndNameMap);
 	}
+	*/
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -187,20 +263,37 @@ public class AccountList extends ListActivity {
 		}
 	}
 
-	private void startActivity(View l, View v, int position, long id,
+	private void startActivity(ListView l, View v, int position, long id,
 			String[] strings) {
 		try {
 			Intent intent = new Intent();
-			intent.putExtra("id", strings[position].substring(0, 18));
+			TextView tv = (TextView)v;
+			String name = tv.getText().toString();
+			
+			Set<Entry<String, HashMap>> se = SObjectDB.SOBJECT_DB.get(SOBJECT_TYPE).entrySet();
+			
+			for (Map.Entry<String, HashMap> e : se) {
+				HashMap hm = e.getValue();
+				if(!hm.get("SObjectType").equals(SOBJECT_TYPE))continue;
+				String value = (String)hm.get("Name");
+				if(name.equals(value)) {
+					intent.putExtra("Id", e.getKey());
+					break;
+				}
+			}
+			
+			//intent.putExtra("Id", tv.getText().toString().substring(0, StaticInformation.RECORD_ID_LENGTH));
+			//Log.v(TAG, "--" + tv.getText().toString().substring(0, StaticInformation.RECORD_ID_LENGTH));
 			intent.setClass(AccountList.this,
 					com.android.salesforce.sobject.AccountInfo.class);
-			StaticInformation.isList = false;
+			//StaticInformation.isList = false;
 			startActivity(intent);
 		} catch (Exception ex) {
 			Log.v(TAG, ex.toString());
 		}
 	}
 
+	/**
 	private void setListArray() {
 		LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
 		layout.setSelected(true);
@@ -252,5 +345,6 @@ public class AccountList extends ListActivity {
 			layout.addView(textView2, p);
 		}
 	}
+	*/
 
 }
