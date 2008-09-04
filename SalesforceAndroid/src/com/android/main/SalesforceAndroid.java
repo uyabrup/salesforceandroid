@@ -4,13 +4,24 @@
 
 package com.android.main;
 
+import java.util.ArrayList;
+
 import com.android.R;
 import com.android.animation.Rotate3dAnimation;
+import com.android.google.operation.TutorialOnMaps;
+import com.android.notepad.NoteEditor;
+import com.android.notepad.NotePad;
+import com.android.notepad.NotePadProvider;
+import com.android.notepad.NotesList;
+import com.android.salesforce.database.SObjectSQLite;
 import com.android.salesforce.frame.TabMenuMaker;
 import com.android.salesforce.operation.ApexApiCaller;
+import com.android.salesforce.util.SObjectDB;
 import com.android.salesforce.util.StaticInformation;
+import com.google.android.googleapps.MsisdnTokenFetcher;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -47,8 +58,12 @@ public class SalesforceAndroid extends Activity implements
 	public static final String KEY_BODY = "body";
 
 	private final Handler handler = new Handler();
+	private static SalesforceAndroid sa;
+	private static StringBuffer table = new StringBuffer();;
+	private static SObjectSQLite ss = new SObjectSQLite();
+	private static ArrayList<ContentValues> cv = new ArrayList<ContentValues>();
 	private static ViewFlipper VFlipper;
-	private static TextSwitcher mSwitcher;
+	private static TextView mSwitcher;
 	private static EditText UserId;
 	private static EditText UserPassword;
 	private static boolean login = false;
@@ -59,7 +74,8 @@ public class SalesforceAndroid extends Activity implements
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		setContentView(R.layout.main);
+		sa = this;
+		setContentView(R.layout.login_display);
 
 		StaticInformation.MainContainer = (ViewGroup) findViewById(R.id.container);
 
@@ -69,15 +85,16 @@ public class SalesforceAndroid extends Activity implements
 		// VFlipper = ((ViewFlipper) this.findViewById(R.id.flipper));
 		// VFlipper.startFlipping();
 		
-		mSwitcher = (TextSwitcher) findViewById(R.id.switcher);
-		mSwitcher.setFactory(this);
+		mSwitcher = (TextView) findViewById(R.id.switcher);
+		//mSwitcher.setFactory(this);
+		//mSwitcher.setBackgroundColor(0xFF000000);
 
 		Animation in = AnimationUtils.loadAnimation(this,
 				android.R.anim.fade_in);
 		Animation out = AnimationUtils.loadAnimation(this,
 				android.R.anim.fade_out);
-		mSwitcher.setInAnimation(in);
-		mSwitcher.setOutAnimation(out);
+		//mSwitcher.setInAnimation(in);
+		//mSwitcher.setOutAnimation(out);
 		mSwitcher.setVisibility(4);
 		mSwitcher.setText("Authenticating...");
 		
@@ -92,10 +109,12 @@ public class SalesforceAndroid extends Activity implements
 		/** setting user id/pw */
 		UserId = (EditText) findViewById(R.id.salesforce_user_id);
 		UserPassword = (EditText) findViewById(R.id.salesforce_user_password);
-		UserId.setText("demo id/pw is hard coded");
-		UserPassword.setText("So Click 'Login'!");
+		//UserId.setText("jtasaki@sfl.08");
+		UserId.setText("dodahara@gmail.com");
+		UserPassword.setText("*******");
 
 		loginButton = (Button) findViewById(R.id.salesforce_login);
+		loginButton.setAnimation(in);
 
 		loginButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -106,9 +125,13 @@ public class SalesforceAndroid extends Activity implements
 
 					Intent intent = new Intent();
 					intent.setClass(SalesforceAndroid.this, TabMenuMaker.class);
+					//intent.setClass(SalesforceAndroid.this, NotesList.class);
 					startActivity(intent);
 				} else {
 
+					//StaticInformation.USER_ID = UserId.getText().toString();
+					//StaticInformation.USER_PW = UserPassword.getText().toString();
+					
 					mSwitcher.setVisibility(0);
 					Log.v(TAG, "Not logged in Yet...");
 
@@ -116,15 +139,9 @@ public class SalesforceAndroid extends Activity implements
 
 				}
 
-				/*
-				 * Toast.makeText(SalesforceAcessor.this,
-				 * R.string.message_while_login, Toast.LENGTH_LONG).show();
-				 */
-
 			}
 		});
 
-		// setContentView(new ImageView(this));
 	}
 
 	/**
@@ -200,7 +217,7 @@ public class SalesforceAndroid extends Activity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		// menu.add(0, INSERT_ID, R.string.menu_insert);
+			menu.add(R.string.label_salesforce_refresh);
 		// menu.add(0, DELETE_ID, R.string.menu_delete);
 		// menu.add(0, SFDC_LOGIN_ID, R.string.menu_sfdc_login);
 		// menu.add(0, SFDC_ACCOUNT_ID, R.string.menu_sfdc_account);
@@ -210,16 +227,17 @@ public class SalesforceAndroid extends Activity implements
 	/** Menu on Display */
 	@Override
 	public boolean onMenuItemSelected(int featureId, android.view.MenuItem item) {
-		/*
-		 * switch(item.getItemId()) {
-		 * 
-		 * case INSERT_ID: createNote(); return true; case DELETE_ID:
-		 * mDbHelper.deleteNote(getListView().getSelectedItemId()); fillData();
-		 * return true;
-		 * 
-		 * case SFDC_LOGIN_ID: return true;
-		 *  }
-		 */
+		
+		initialProcess = false;
+		mSwitcher.setVisibility(4);
+		mSwitcher.setText("Authenticating...");
+		loginButton.setText("Login");
+		
+		SObjectDB.SOBJECT_DB.clear();
+		SObjectDB.SOBJECTS.clear();
+		SObjectDB.SYSTEM_DB.clear();
+		SObjectDB.WHERE_HOLDER.clear();
+
 		return super.onMenuItemSelected(featureId, item);
 	}
 
@@ -247,25 +265,78 @@ public class SalesforceAndroid extends Activity implements
 				login = bind.login();
 				Log.v(TAG, "Login Result : " + login);
 
-				bind.describe("Account");
 				handler.post(new Runnable() {
 					public void run() {
-						mSwitcher.setText("Loading Data...");
+						mSwitcher.setText("Loading Layout...");
 					}
 				});
 				
-				bind.query("Account");
+				table = bind.describeSOject("Opportunity");
+				
+				Log.v(TAG, "Opportunity table:" + table.toString());
+				
 				handler.post(new Runnable() {
 					public void run() {
-						mSwitcher.setText("Login Success");
-						loginButton.setText(" Go ");
+						ss.create(sa, table.toString(), "Opportunity");
+					}
+				});
+				
+				table = bind.describeSOject("Account");
+				
+				Log.v(TAG, "Account table:" + table.toString());
+				
+				handler.post(new Runnable() {
+					public void run() {
+						ss.create(sa, table.toString(), "Account");
+					}
+				});
+				
+				/** English org record type */
+				String rds = "012400000005NZa"; 
+				/** Japnese org record type */
+				//String rds = "012400000005NZa"; */	
+				
+				bind.describeLayout("Opportunity", rds);
+				
+				/** English org record type */
+				rds = "012400000005NXt"; 
+				/** Japnese org record type */
+				//String rds = "012100000004Mbr"; */
+
+				bind.describeLayout("Account", rds);
+	
+				/** query */
+				cv = bind.query("Opportunity");
+				handler.post(new Runnable() {
+					public void run() {
+						for(ContentValues c : cv) {
+							ss.insert(c, "Opportunity");
+						}
 					}
 				});
 
+				cv = bind.query("Account");
+				handler.post(new Runnable() {
+					public void run() {
+						for(ContentValues c : cv) {
+							ss.insert(c, "Account");
+						}
+					}
+				});
+				
+				bind.queryUser();
+				
 				initialProcess = true;
 				handler.post(new Runnable() {
 					public void run() {
 						loginButton.setFocusable(true);
+					}
+				});
+
+				handler.post(new Runnable() {
+					public void run() {
+						mSwitcher.setText("Login Success");
+						loginButton.setText(" Go ");
 					}
 				});
 				Looper.loop();
