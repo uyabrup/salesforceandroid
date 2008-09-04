@@ -4,6 +4,7 @@
 
 package com.android.salesforce.sobject;
 
+import java.awt.font.TextAttribute;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,9 +14,13 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.style.StyleSpan;
 import android.text.util.Linkify;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,9 +31,10 @@ import com.android.salesforce.frame.SectionHolder;
 import com.android.salesforce.util.SObjectDB;
 import com.android.salesforce.util.StaticInformation;
 
-public class AccountInfo extends SObject implements SObjectIF {
-		private static final String TAG = "AccountInfo";
-		private static final String SOBJECT_TYPE = "Account";
+public class OpportunityInfo extends SObject implements SObjectIF {
+		private static final String TAG = "OpportunityInfo";
+		private static final String SOBJECT_TYPE = "Opportunity";
+		private static HashMap hm = new HashMap();
 		public static String WebSite;
 		public static String Description;
 		public static String Phone;
@@ -63,13 +69,12 @@ public class AccountInfo extends SObject implements SObjectIF {
 	        //Pattern p2 = Pattern.compile(".*Phone.*");
 
 	        //int sSize = SObjectDB.SECTIONS.size();
-	        ArrayList<SectionHolder> shs = SObjectDB.SOBJECTS.get(SOBJECT_TYPE).sections;
+	        ArrayList<SectionHolder> shs = SObjectDB.SOBJECTS.get(SOBJECT_TYPE).sections;;
 	        for(SectionHolder sh : shs) {
 	        	/** setting section header */
 	        	TextView sv = new TextView(this);
 	        	sv.setText(sh.name);
-	        	sv.setTextSize(19);
-	        	sv.setPadding(0, 3, 0, 0);
+	        	sv.setTextSize(18);
 	        	sv.setBackgroundColor(0xEEFFFACD);
 	        	sv.setTextColor(0xFF688E44);
 	            LinearLayout.LayoutParams hl = new LinearLayout.LayoutParams(
@@ -96,34 +101,44 @@ public class AccountInfo extends SObject implements SObjectIF {
 		            /** setting value */
 		            TextView data = new TextView(this);
 		            String an = fs.value;
-		            if(an.equals("ParentId"))continue;
-		            //TextView textView2 = (TextView) findViewById(R.id.item_value);
-		            String v = (String)(tempDB.get(an));
+		            String v = (String)tempDB.get(an);
+		            Log.v(TAG, an);
 
 		            data.setTextColor(0xFF000000);
+		            //Log.v(TAG, "API Name:" + fs.value);
+		            if(an.equals("AccountId")){
+		            	hm = SObjectDB.SOBJECT_DB.get("Account").get(v);
+		            	v = (String)hm.get("Name");
+		            	data.setTextColor(0xEE4169E1);
+		            	data.setOnClickListener(new View.OnClickListener() {
+		            		public void onClick(View vv) {
+		    		            Log.v(TAG, "Clicked..");
+		    		            TextView tv = (TextView)vv;
+		    		            Log.v(TAG, "\t Value:" + tv.getText());
+		    		            Log.v(TAG, "\t Id:" + hm.get("Id"));
+		    		            
+		    					Intent intent = new Intent();
+		    					intent.putExtra("Id", hm.get("Id").toString());
+		    					intent.setClass(OpportunityInfo.this,
+		    							AccountInfo.class);
+		    					//StaticInformation.isList = false;
+		    					startActivity(intent);
+		            		}
+		            	});
+		            	
+		            }
+		            		            
 		            data.setText(v);
-		            Log.v(TAG, an);
+		            //Log.v(TAG, e.getValue());
 		           // Linkify.addLinks(textView2, Linkify.ALL);
 		            if(an.equals("Website")) Linkify.addLinks(data, Linkify.WEB_URLS);
-		            else if(an.equals("Phone")) Linkify.addLinks(data, Linkify.PHONE_NUMBERS);
-		            else if(an.equals("AnnualRevenue")) data.setText(String.valueOf(Double.valueOf(v).intValue()));
-		         
+		            else if(an.equals("Account Phone")) Linkify.addLinks(data, Linkify.PHONE_NUMBERS);
+		            else if(an.endsWith("Amount")) data.setText(String.valueOf(Double.valueOf(v).intValue()));
+
 		            else if(an.equals("CreatedById"))data.setText(uDB.get(v).get("Name"));
 		            else if(an.equals("OwnerId"))data.setText(uDB.get(v).get("Name"));
 		            else if(an.equals("LastModifiedById"))data.setText(uDB.get(v).get("Name"));
-		            else if(an.equals("gMapParam__c")){
-		            	if(v == "" || v == null)continue;
-		            	Log.v(TAG, "param:" + v);
-		            	String[] ss = v.split(",");
-		            	Log.v(TAG, ss[0] + ":" + ss[1] + ":" + ss[2] + ":" + ss[3]);
-		            	String[] st = ss[4].split(":");
-		            	Log.v(TAG, st[0] + ":" + st[1]);
-		            	String url = "http://www.google.co.jp/maps?q=" + ss[0] + "," + ss[1].trim() + "&z=" + st[1];
-		            	data.setText(url);
-		            	Linkify.addLinks(data, Linkify.WEB_URLS);
-		            }
 		            else if(v == "" || v == null) data.setText("-");
-		            
 		            data.setTextSize(18);
 
 		            layout.addView(data, fl);
