@@ -4,12 +4,14 @@
     <!-- Database permission -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-library android:name="com.google.android.maps" />
     
     <!-- Mandatory tag to connect the internet -->
 	<uses-permission android:name="android.permission.INTERNET" />
 	
 	<!-- Activity -->
-    <application android:icon="@drawable/salesforce_cube">
+    <application android:icon="@drawable/salesforce_cube"
+    			>
         <activity android:name=".main.SalesforceAndroid" android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,10 +29,90 @@
         <!--  <activity android:name=".sobject.EventList" android:label="@string/event_list"></activity>  -->
         <!-- <activity android:name=".sobject.TaskList" android:label="@string/task_list"></activity>-->
         <activity android:name=".salesforce.sobject.AccountInfo" android:label="@string/acc_info"></activity>
+        <activity android:name=".salesforce.sobject.OpportunityInfo" android:label="@string/opp_info"></activity>
+        <activity android:name=".salesforce.sobject.OpportunityList" android:label="@string/opp_list"></activity>
         <!-- <activity android:name=".sobject.EventInfo" android:label="@string/event_info"></activity>-->
         <activity android:name=".salesforce.viewer.ChartViewer" android:label="Online DashBoard"></activity>
-        <activity android:name=".salesforce.frame.TabMenuMaker" android:label="Tab View"></activity>
+        <activity android:name=".salesforce.frame.TabMenuMaker" android:label="Salesforce Android"></activity>
         <activity android:name=".salesforce.frame.CalendarComponent" android:label="Calendar"></activity>
+        <activity android:name=".salesforce.frame.SQLiteComponent" android:label="DB test"></activity>
         
+        <activity android:name=".google.operation.TutorialOnMaps" android:label="map"></activity>
+        
+        <!-- Note Pad -->
+        <provider android:name=".notepad.NotePadProvider"
+            android:authorities=".notepad.NotePad"
+        />
+
+        <activity android:name=".notepad.NotesList" android:label="@string/title_notes_list">
+            <!-- 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.PICK" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.dir/vnd.google.note" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.GET_CONTENT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.google.note" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".notepad.NoteEditor"
+            android:theme="@android:style/Theme.Light"
+            android:label="@string/title_note"
+        >
+            <!-- This filter says that we can view or edit the data of
+                 a single note -->
+            <intent-filter android:label="@string/resolve_edit">
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="com.android.notepad.action.EDIT_NOTE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.google.note" />
+            </intent-filter>
+
+            <!-- This filter says that we can create a new note inside
+                 of a directory of notes. -->
+            <intent-filter>
+                <action android:name="android.intent.action.INSERT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.dir/vnd.google.note" />
+            </intent-filter>
+
+        </activity>
+
+                <activity android:name=".notepad.TitleEditor" android:label="@string/title_edit_title"
+                                android:theme="@android:style/Theme.Dialog">
+            <!-- This activity implements an alternative action that can be
+                 performed on notes: editing their title.  It can be used as
+                 a default operation if the user invokes this action, and is
+                 available as an alternative action for any note data. -->
+            <intent-filter android:label="@string/resolve_title">
+                <!-- This is the action we perform.  It is a custom action we
+                     define for our application, not a generic VIEW or EDIT
+                     action since we are not a general note viewer/editor. -->
+                <action android:name="com.android.notepad.action.EDIT_TITLE" />
+                <!-- DEFAULT: execute if being directly invoked. -->
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- ALTERNATIVE: show as an alternative action when the user is
+                     working with this type of data. -->
+                <category android:name="android.intent.category.ALTERNATIVE" />
+                <!-- SELECTED_ALTERNATIVE: show as an alternative action the user
+                     can perform when selecting this type of data. -->
+                <category android:name="android.intent.category.SELECTED_ALTERNATIVE" />
+                <!-- This is the data type we operate on. -->
+                <data android:mimeType="vnd.android.cursor.item/vnd.google.note" />
+            </intent-filter>
+        </activity>
+
+		<!-- End of Note Pad -->        
     </application>
 </manifest> 
