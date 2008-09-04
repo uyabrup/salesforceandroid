@@ -9,10 +9,7 @@ import java.util.ArrayList;
 import com.android.R;
 import com.android.animation.Rotate3dAnimation;
 import com.android.google.operation.TutorialOnMaps;
-import com.android.notepad.NoteEditor;
-import com.android.notepad.NotePad;
-import com.android.notepad.NotePadProvider;
-import com.android.notepad.NotesList;
+
 import com.android.salesforce.database.SObjectSQLite;
 import com.android.salesforce.frame.TabMenuMaker;
 import com.android.salesforce.operation.ApexApiCaller;
@@ -77,7 +74,7 @@ public class SalesforceAndroid extends Activity implements
 		sa = this;
 		setContentView(R.layout.login_display);
 
-		StaticInformation.MainContainer = (ViewGroup) findViewById(R.id.container);
+		//StaticInformation.MainContainer = (ViewGroup) findViewById(R.id.container);
 
 		// progress dialog
 		// prog = new ProgressDialog(SalesforceAndroid.this);
