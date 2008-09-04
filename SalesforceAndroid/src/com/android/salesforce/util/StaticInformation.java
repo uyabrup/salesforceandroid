@@ -24,6 +24,10 @@ public class StaticInformation {
 	public static int RECORD_ID_LENGTH = 18;
 	public static String USER_ID= "dodahara@gmail.com";
 	public static String USER_PW = "sfdcj12345bqdqRDDd19FTdlOwyBfe94pLZ";
+	//public static String USER_ID= "jtasaki@sfl.08";
+	//public static String USER_PW = "sfdcj";
+	
+	
 	public static String SESSION_ID;
 	public static String API_SERVER_URL;
 	public static boolean isLoaded = false;
