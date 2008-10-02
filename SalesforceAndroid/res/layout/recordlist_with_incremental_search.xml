@@ -40,7 +40,7 @@
 			android:textColor="#BBFFFFFF"
 			android:paddingBottom="7px" android:paddingTop="7px"
 			android:paddingLeft="5px" android:paddingRight="5px"
-						android:layout_marginBottom="6px" android:layout_marginTop="6px"
+			android:layout_marginBottom="6px" android:layout_marginTop="6px"
 			/>
 
 		<TextView android:id="@id/android:empty"
