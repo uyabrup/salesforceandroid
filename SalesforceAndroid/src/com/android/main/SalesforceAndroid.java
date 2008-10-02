@@ -111,8 +111,8 @@ public class SalesforceAndroid extends Activity implements
 		UserId = (EditText) findViewById(R.id.salesforce_user_id);
 		UserPassword = (EditText) findViewById(R.id.salesforce_user_password);
 
-		UserId.setText("dai.odahara@gmail.com");
-		UserPassword.setText("*******");
+		UserId.setText("android@google.com");
+		UserPassword.setText("password12345");
 
 		loginButton = (Button) findViewById(R.id.salesforce_login);
 		loginButton.setAnimation(in);
@@ -131,8 +131,8 @@ public class SalesforceAndroid extends Activity implements
 					startActivity(intent);
 				} else {
 
-					//StaticInformation.USER_ID = UserId.getText().toString();
-					//StaticInformation.USER_PW = UserPassword.getText().toString();
+					StaticInformation.USER_ID = UserId.getText().toString();
+					StaticInformation.USER_PW = UserPassword.getText().toString();
 					
 					mSwitcher.setVisibility(0);
 					Log.v(TAG, "Not logged in Yet...");
@@ -231,6 +231,7 @@ public class SalesforceAndroid extends Activity implements
 	public boolean onMenuItemSelected(int featureId, android.view.MenuItem item) {
 		
 		initialProcess = false;
+		login = false;
 		mSwitcher.setVisibility(4);
 		mSwitcher.setText("Authenticating...");
 		loginButton.setText("Login");
@@ -283,7 +284,6 @@ public class SalesforceAndroid extends Activity implements
 					}
 				});
 
-				
 				// Login Call
 				login();
 				
@@ -294,37 +294,38 @@ public class SalesforceAndroid extends Activity implements
 				describeSObject("Event");
 				
 				// English org record type
-				String rds;			
-				rds = "012400000005OcI"; //event
+				String rds;	
+				rds = StaticInformation.MASTER_RECORD_TYPE_ID;
+				//rds = "012400000005OcI"; //event
 				bind.describeLayout("Event", rds);
 				
 				describeSObject("Task");
-				rds = "012400000005OcN"; //task
+				//rds = "012400000005OcN"; //task
 				bind.describeLayout("Task", rds);
 				
 				// Opportunity
 				describeSObject("Opportunity");
-				rds = "012400000005NZa"; 
+				//rds = "012400000005NZa"; 
 				bind.describeLayout("Opportunity", rds);
 				
 				// Case
 				describeSObject("Case");
-				rds = "012400000005OnC";
+				//rds = "012400000005OnC";
 				bind.describeLayout("Case", rds);
 				
 				// Contact
 				describeSObject("Contact");
-				rds = "012400000005OmT";
+				//rds = "012400000005OmT";
 				bind.describeLayout("Contact", rds);
 
 				// Lead
 				describeSObject("Lead");
-				rds = "012400000005On7";
+				//rds = "012400000005On7";
 				bind.describeLayout("Lead", rds);
 				
 				// Account
 				describeSObject("Account");
-				rds = "012400000005NXt";
+				//rds = "012400000005NXt";
 				bind.describeLayout("Account", rds);
 				
 				describeSObject("User");
