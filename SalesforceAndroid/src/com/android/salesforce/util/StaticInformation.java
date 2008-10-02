@@ -26,7 +26,7 @@ public class StaticInformation {
 	public static String USER_ID= "dai.odahara@gmail.com";
 	//public static String USER_ID= "user01@capture.honishi.org";
 	//public static String USER_PW = "abcd1234";
-	public static String USER_PW = "password12";
+	public static String USER_PW = "sfdcj12345";
 	//public static String USER_ID= "jtasaki@sfl.08";
 	//public static String USER_PW = "sfdcj";
 	
@@ -45,8 +45,7 @@ public class StaticInformation {
     public static ViewGroup MainContainer;
     
     public static String[] DOWNLOAD_SOBJECTS = { "Event", "Task", "Lead", "Account", "Contact", 
-    		"Opportunity", "Case", "ChartViewer", "BrowserViewer"
-    		//, "CaseList", "DocumentViewerList",
-	//"DashBoardList", "SFDCTestList", "TabList" 
-    };
+    		"Opportunity", "Case", "ChartViewer", "BrowserViewer"};
+    
+    public static final String MASTER_RECORD_TYPE_ID = "012000000000000AAA";
 }
