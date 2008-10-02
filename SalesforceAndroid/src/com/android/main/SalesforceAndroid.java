@@ -11,8 +11,8 @@ import com.android.animation.Rotate3dAnimation;
 import com.android.google.operation.TutorialOnMaps;
 
 import com.android.salesforce.database.SObjectSQLite;
-import com.android.salesforce.frame.TabMenuMaker;
 import com.android.salesforce.operation.ApexApiCaller;
+import com.android.salesforce.sobject.MainMenu;
 import com.android.salesforce.util.SObjectDB;
 import com.android.salesforce.util.StaticInformation;
 import com.google.android.googleapps.MsisdnTokenFetcher;
@@ -58,6 +58,7 @@ public class SalesforceAndroid extends Activity implements
 	private static SalesforceAndroid sa;
 	private static StringBuffer table = new StringBuffer();;
 	private static SObjectSQLite ss = new SObjectSQLite();
+	private static ApexApiCaller bind = new ApexApiCaller();
 	private static ArrayList<ContentValues> cv = new ArrayList<ContentValues>();
 	private static ViewFlipper VFlipper;
 	private static TextView mSwitcher;
@@ -66,7 +67,9 @@ public class SalesforceAndroid extends Activity implements
 	private static boolean login = false;
 	private static boolean initialProcess = false;
 	private static Button loginButton;
-
+	private static String SObject;
+    private ViewGroup mContainer;
+    
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -81,7 +84,8 @@ public class SalesforceAndroid extends Activity implements
 		// setting spinner 
 		// VFlipper = ((ViewFlipper) this.findViewById(R.id.flipper));
 		// VFlipper.startFlipping();
-		
+        mContainer = (ViewGroup) findViewById(R.id.login_container);
+        
 		mSwitcher = (TextView) findViewById(R.id.switcher);
 		//mSwitcher.setFactory(this);
 		//mSwitcher.setBackgroundColor(0xFF000000);
@@ -106,8 +110,8 @@ public class SalesforceAndroid extends Activity implements
 		/** setting user id/pw */
 		UserId = (EditText) findViewById(R.id.salesforce_user_id);
 		UserPassword = (EditText) findViewById(R.id.salesforce_user_password);
-		//UserId.setText("jtasaki@sfl.08");
-		UserId.setText("dodahara@gmail.com");
+
+		UserId.setText("dai.odahara@gmail.com");
 		UserPassword.setText("*******");
 
 		loginButton = (Button) findViewById(R.id.salesforce_login);
@@ -115,14 +119,15 @@ public class SalesforceAndroid extends Activity implements
 
 		loginButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				// initialProcess = true;
-				if (initialProcess) {
+				 //login = true;
+				if (login) {
+					//applyRotation(0, 180);
 					Log.v(TAG, "Already logged in...");
 					// applyRotation(-1, 0, 90);
 
 					Intent intent = new Intent();
-					intent.setClass(SalesforceAndroid.this, TabMenuMaker.class);
-					//intent.setClass(SalesforceAndroid.this, NotesList.class);
+					//intent.setClass(SalesforceAndroid.this, TabMenuMaker.class);
+					intent.setClass(SalesforceAndroid.this, MainMenu.class);
 					startActivity(intent);
 				} else {
 
@@ -131,9 +136,9 @@ public class SalesforceAndroid extends Activity implements
 					
 					mSwitcher.setVisibility(0);
 					Log.v(TAG, "Not logged in Yet...");
-
+					loginButton.setClickable(false);
 					processLogin();
-
+					//loginButton.setFocusable(true);
 				}
 
 			}
@@ -190,10 +195,10 @@ public class SalesforceAndroid extends Activity implements
 	 * @param end
 	 *            the end angle of the rotation
 	 */
-	private void applyRotation(int position, float start, float end) {
+	private void applyRotation(float start, float end) {
 		/** Find the center of the container */
-		final float centerX = StaticInformation.MainContainer.getWidth() / 2.0f;
-		final float centerY = StaticInformation.MainContainer.getHeight() / 2.0f;
+		final float centerX = mContainer.getWidth() / 2.0f;
+		final float centerY = mContainer.getHeight() / 2.0f;
 
 		/**
 		 * Create a new 3D rotation with the supplied parameter The animation
@@ -201,12 +206,12 @@ public class SalesforceAndroid extends Activity implements
 		 */
 		final Rotate3dAnimation rotation = new Rotate3dAnimation(start, end,
 				centerX, centerY, 310.0f, true);
-		rotation.setDuration(700);
+		rotation.setDuration(500);
 		rotation.setFillAfter(true);
 		rotation.setInterpolator(new AccelerateInterpolator());
-		// rotation.setAnimationListener(new SObjectList(position));
+		//rotation.setAnimationListener(new MainMenu());
 
-		StaticInformation.MainContainer.startAnimation(rotation);
+		mContainer.startAnimation(rotation);
 
 	}
 
@@ -246,6 +251,26 @@ public class SalesforceAndroid extends Activity implements
 		return t;
 	}
 
+	public void stop() {
+
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(600);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Intent intent = new Intent();
+				//intent.setClass(SalesforceAndroid.this, TabMenuMaker.class);
+				intent.setClass(SalesforceAndroid.this, MainMenu.class);
+				startActivity(intent);
+
+			}
+		});
+		t.start();
+	}
+	
 	public void processLogin() {
 
 		Thread t = new Thread(new Runnable() {
@@ -254,79 +279,77 @@ public class SalesforceAndroid extends Activity implements
 
 				handler.post(new Runnable() {
 					public void run() {
-						loginButton.setFocusable(false);
+
 					}
 				});
 
-				ApexApiCaller bind = new ApexApiCaller();
-				login = bind.login();
-				Log.v(TAG, "Login Result : " + login);
-
-				handler.post(new Runnable() {
-					public void run() {
-						mSwitcher.setText("Loading Layout...");
-					}
-				});
 				
-				table = bind.describeSOject("Opportunity");
+				// Login Call
+				login();
 				
-				Log.v(TAG, "Opportunity table:" + table.toString());
+				// Create Keyprefix x Sobject createKeyprefixSObject
+				anaylizeKeyPreFix();
 				
-				handler.post(new Runnable() {
-					public void run() {
-						ss.create(sa, table.toString(), "Opportunity");
-					}
-				});
+				// DescribeSObject
+				describeSObject("Event");
 				
-				table = bind.describeSOject("Account");
+				// English org record type
+				String rds;			
+				rds = "012400000005OcI"; //event
+				bind.describeLayout("Event", rds);
 				
-				Log.v(TAG, "Account table:" + table.toString());
+				describeSObject("Task");
+				rds = "012400000005OcN"; //task
+				bind.describeLayout("Task", rds);
 				
-				handler.post(new Runnable() {
-					public void run() {
-						ss.create(sa, table.toString(), "Account");
-					}
-				});
-				
-				/** English org record type */
-				String rds = "012400000005NZa"; 
-				/** Japnese org record type */
-				//String rds = "012400000005NZa"; */	
-				
+				// Opportunity
+				describeSObject("Opportunity");
+				rds = "012400000005NZa"; 
 				bind.describeLayout("Opportunity", rds);
 				
-				/** English org record type */
-				rds = "012400000005NXt"; 
-				/** Japnese org record type */
-				//String rds = "012100000004Mbr"; */
+				// Case
+				describeSObject("Case");
+				rds = "012400000005OnC";
+				bind.describeLayout("Case", rds);
+				
+				// Contact
+				describeSObject("Contact");
+				rds = "012400000005OmT";
+				bind.describeLayout("Contact", rds);
 
+				// Lead
+				describeSObject("Lead");
+				rds = "012400000005On7";
+				bind.describeLayout("Lead", rds);
+				
+				// Account
+				describeSObject("Account");
+				rds = "012400000005NXt";
 				bind.describeLayout("Account", rds);
-	
-				/** query */
-				cv = bind.query("Opportunity");
-				handler.post(new Runnable() {
-					public void run() {
-						for(ContentValues c : cv) {
-							ss.insert(c, "Opportunity");
-						}
-					}
-				});
+				
+				describeSObject("User");
 
-				cv = bind.query("Account");
-				handler.post(new Runnable() {
-					public void run() {
-						for(ContentValues c : cv) {
-							ss.insert(c, "Account");
-						}
-					}
-				});
+				
+				// query
+				query("Event");
+				query("Task");
+				query("Lead");
+				query("Case");
+				query("Opportunity");
+				query("Contact");				
+				query("Account");
+				
+				// user query
+				//query("User");
 				
 				bind.queryUser();
 				
-				initialProcess = true;
+				
+				// proccess after calling api
+				//initialProcess = true;
 				handler.post(new Runnable() {
 					public void run() {
-						loginButton.setFocusable(true);
+						//loginButton.setFocusable(true);
 					}
 				});
 
@@ -334,6 +357,7 @@ public class SalesforceAndroid extends Activity implements
 					public void run() {
 						mSwitcher.setText("Login Success");
 						loginButton.setText(" Go ");
+						loginButton.setClickable(true);
 					}
 				});
 				Looper.loop();
@@ -342,5 +366,60 @@ public class SalesforceAndroid extends Activity implements
 		});
 		t.start();
 	}
+	
+	// describeSobject caller
+	private void describeSObject(String sobject) {
+		SObject = sobject;
+		table = bind.describeSOject(sobject);
+		Log.v(TAG, sobject+ " table:" + table.toString());
+		handler.post(new Runnable() {
+			public void run() {
+				mSwitcher.setText("Loading " + SObject + " Layout...");
+			}
+		});
+		ss.create(sa, table.toString(), sobject);
+	}
 
+	// login caller
+	private void login(){
+		handler.post(new Runnable() {
+			public void run() {
+				mSwitcher.setText("Authenticating...");
+			}
+		});
+		login = bind.login();
+		Log.v(TAG, "Login Result : " + login);
+	}
+	
+	// analize key prefix
+	private void anaylizeKeyPreFix() {
+		Log.v(TAG, "Creating Keyprefix x Sobject Table...");
+		handler.post(new Runnable() {
+			public void run() {
+				//mSwitcher.setText("Loading " + SObject + " DescribeSOjbect...");
+				ss.createKeyprefixSObject(sa);
+			}
+		});
+	}
+	
+	// describeLayout caller
+	private void describeLayout(String sobject) {
+		
+		//bind.describeLayout(sobject, rds);
+	}
+	
+	// query caller
+	private void query(String sobject){
+		SObject = sobject;
+		cv = bind.query(sobject);
+		handler.post(new Runnable() {
+			public void run() {
+					mSwitcher.setText("Querying " + SObject + "...");
+			}
+		});
+		for(ContentValues c : cv) {
+			ss.insert(c, sobject);
+		}
+	}
+	
 }

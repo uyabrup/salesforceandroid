@@ -1,7 +1,17 @@
+/**
+ * Copyright (C) 2008 Dai Odahara.
+ */
+
 package com.android.salesforce.frame;
 
 import java.util.Comparator;
 
+/**
+ * This class is responsible for managing fields information by Hitting describeLayout.
+ * 
+ * @author Dai Odahara
+ * 
+ */
 public class FieldHolder implements Comparator {
 	public boolean editable;
 	public String label;

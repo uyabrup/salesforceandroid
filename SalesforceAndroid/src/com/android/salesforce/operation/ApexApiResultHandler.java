@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,11 +17,15 @@ import android.content.ContentValues;
 import android.util.Log;
 
 import com.android.salesforce.frame.FieldHolder;
+import com.android.salesforce.frame.LayoutHolder;
 import com.android.salesforce.frame.SectionHolder;
 import com.android.salesforce.util.SObjectDB;
-import com.android.salesforce.util.SObjectFactory;
 import com.android.salesforce.util.StaticInformation;
 
+/**
+ * This class works with results of Salesforce Apex API. 
+ * @author Dai Odahara
+ */
 public class ApexApiResultHandler {
 	private static final String TAG = "ApexApiResultHandler";
 
@@ -35,7 +40,7 @@ public class ApexApiResultHandler {
 		int ss = res.indexOf(si);
 		int es = res.indexOf(' ', ss);
 		StaticInformation.SESSION_ID = res.substring(ss + si.length(), es - 1);
-		Log.v(TAG, "Session Id : " + StaticInformation.SESSION_ID);
+		Log.v(TAG, "Session Id :" + StaticInformation.SESSION_ID);
 	}
 
 	/** extracts API server URL of salesforce force.com api */
@@ -63,27 +68,28 @@ public class ApexApiResultHandler {
 	}
 
 	/** extracts query result size */
-	public int getQueryResultSize(String res) {
-		Log.v(TAG, "Result : " + res);
+	public int getQueryResultSize(String res, String sobject) {
+		Log.v(TAG, "Result Literal: " + res);
 		String si = "size=";
 		int ss = res.indexOf(si);
 		int es = res.indexOf(';', ss + 1);
-		Log.v(TAG, "Result size : "
+		Log.v(TAG, sobject + " Result size : "
 				+ Integer.valueOf(res.substring(ss + si.length(), es)));
 		return Integer.valueOf(res.substring(ss + si.length(), es));
 	}
 
 	/** save data into db (at present, hashmap object */
-	public ArrayList<ContentValues> saveData(String[] records, String sobject) {
+	public ArrayList<ContentValues> saveData(String[] records, String sobject, HashSet<String> refTypeField) {
 		int ss = 0, es = 0;
 		/** for cache */
 		HashMap<String, HashMap> iv = new HashMap<String, HashMap>();
-		ArrayList<String> where = new ArrayList<String>();
+		StringBuffer refId = new StringBuffer();
 		
 		/** for local db */
 		ArrayList<ContentValues> insertData  = new ArrayList<ContentValues>();
 		
 		for(String s : records) {
+			Log.v(TAG, s);
 			HashMap nav = new HashMap();
 			ContentValues cv = new ContentValues();
 			
@@ -101,11 +107,11 @@ public class ApexApiResultHandler {
 			//Log.v(TAG, "\t\t" + "SObjectType=" + nav.get("SObjectType"));
 			
 			for(String r : rr) {
+				// 1st arg is value, 2nd arg is value
 				String[] tt = r.split("=");
-				Log.v(TAG, "\t\t" + tt[0] + "=" + tt[1]);
+				Log.v(TAG, "\t" + tt[0] + "=" + tt[1]);
 
-				/** for where query */
-				if(tt[0].equals("AccountId"))where.add(tt[1]);
+				if(refTypeField.contains(tt[0]))setQueryWherePool(tt[1]);				
 
 				nav.put(tt[0], tt[1]);
 				cv.put(tt[0], tt[1]);
@@ -115,8 +121,6 @@ public class ApexApiResultHandler {
 		}
 		SObjectDB.SOBJECT_DB.put(sobject, iv);
 		
-		/** for opportunity query */
-		SObjectDB.WHERE_HOLDER.put(sobject, where);
 		/**
 		for(String s : where) {
 			Log.v(TAG, "Added Id :" + s);
@@ -126,11 +130,25 @@ public class ApexApiResultHandler {
 
 	}
 	
+	/** analyze sobject type to analyze first 3 digits and set QueryWherePool */
+	private void setQueryWherePool(String value) {
+		String prefix = value.substring(0, StaticInformation.SOBJECT_PREFIX_SIZE);
+		String sobject = SObjectDB.KEYPREFIX_SOBJECT.get(prefix);
+		Log.v(TAG, "SObject with prefix:" + sobject + "-" + prefix);
+		
+		// exttract refid
+		StringBuffer refId = SObjectDB.WHERE_HOLDER.get(sobject);
+		refId.append(value);
+		
+		// set refid 
+		SObjectDB.WHERE_HOLDER.put(sobject, refId);
+	}
+	
 	/** extracts result records */	
 	public String[] analyzeQueryResults(Object result, String sobject) {
 
 		String res = result.toString();
-		int sa = getQueryResultSize(res);
+		int sa = getQueryResultSize(res, sobject);
 		String[] ret = new String[sa];
 
 		String si = "records=" + sobject + "{";
@@ -169,6 +187,8 @@ public class ApexApiResultHandler {
 		String[] ps;
 		int pSize = 0, s2 = 0, e2 = 0;
 
+		//if(sobject.equals("Contact"))table.append("Name text, ");
+		
 		for (int i = 1; i < fSize; i++) {
 			s1 = fs[i].indexOf("autoNumber=");
 			e1 = fs[i].indexOf(";", s1);
@@ -219,7 +239,7 @@ public class ApexApiResultHandler {
 			
 			s1 = fs[i].indexOf("soapType=xsd:", e1);
 			e1 = fs[i].indexOf(";", s1);
-			String type = fs[i].substring(s1 + "soapType=xsd:".length(), e1).equals("int") ? "int" : "text";
+			String type = fs[i].substring(s1 + "soapType=xsd:".length(), e1).equals("int") ? "Integer" : "text";
 			Log.v(TAG, "soapType=xsd:" + type);
 
 			
@@ -249,6 +269,16 @@ public class ApexApiResultHandler {
 		//int sa = getDescribeResultFieldSize(result);
 		//String[] ret = new String[sa];
 
+		s1 = res.indexOf("keyPrefix=", e1);
+		e1 = res.indexOf(";", s1);
+		String kp = res.substring(s1 + "keyPrefix=".length(), e1);
+		Log.v(TAG, "keyPrefix=" + kp);
+		
+		// Save keyprefix and sobject into local cache hash
+		SObjectDB.KEYPREFIX_SOBJECT.put(kp, sobject);
+		
+		table.append("keyPrefix text default '" + kp + "', ");
+		
 		table.delete(table.length()-2, table.length());
 		table.append(");");
 		return table;
@@ -291,11 +321,25 @@ public class ApexApiResultHandler {
 	
 	/** anylyze describeLayout result */
 	public void analyzeDescribeLayoutResults(Object result, String sobject) {
-		Log.v(TAG, "\nAnalyzing Layout...");
+		LayoutHolder sf = new LayoutHolder();
+		sf.detail = new ArrayList<SectionHolder>();
+		sf.related = new ArrayList<SectionHolder>();
 		
-		SObjectFactory sf = new SObjectFactory();
-		sf.sections = new ArrayList<SectionHolder>();
+		analyzeDetailLayoutSection(result, sobject, sf);
+		analyzeRelatedLayoutSection(result, sobject, sf);
+	}
+	
+	/** anylyze describeLayout result */
+	public void analyzeDetailLayoutSection(Object result, String sobject, LayoutHolder sf) {
+		Log.v(TAG, "\nAnalyzing " + sobject + " Detail Layout...");
+		
+		//SObjectFactory sf = new SObjectFactory();
+		//sf.sections = new ArrayList<SectionHolder>();
 		String res = result.toString();
+		if(-1 == res.indexOf("detailLayoutSections")) {
+			Log.v(TAG, "No Detail List...#:" + res.indexOf("detailLayoutSections"));
+			return;
+		}
 		
 		//String fn = "layouts=anyType";
 		String fn = "detailLayoutSections=anyType";
@@ -317,20 +361,15 @@ public class ApexApiResultHandler {
 		for(String s : dls ){
 			SectionHolder sh = new SectionHolder();
 			sh.fields = new ArrayList<FieldHolder>();
-			//System.out.println(s);
-			
-			//String heading = getHeading(s);
+
 			getHeading(s, sh);
 			
-			//System.out.println("" + heading);
-			
-			//sh.name = heading;
 			sh.sectionOrder = index;
 			
 			if(!sh.name.equals("Address Information"))getLayoutItems(s, sh);
 			
 			index++;
-			sf.sections.add(sh);
+			sf.detail.add(sh);
 
 			/*
 			s1 = fs[i].indexOf( "calculated=" );
@@ -340,11 +379,87 @@ public class ApexApiResultHandler {
 			System.out.print(":calculated=" + fs[i].substring(s1 + "calculated=".length(), e1));
 				*/
 		}
-		HashMap<String,SObjectFactory> te = new HashMap<String,SObjectFactory>();
+		HashMap<String,LayoutHolder> te = new HashMap<String,LayoutHolder>();
 		te.put(sobject, sf);
 		SObjectDB.SOBJECTS.put(sobject, sf);
 	}
 	
+	/** anylyze Related Layout result */
+	private void analyzeRelatedLayoutSection(Object result, String sobject, LayoutHolder sf) {
+		Log.v(TAG, "\nAnalyzing " + sobject + " Related Layout...");
+		
+		//SObjectFactory sf = new SObjectFactory();
+		//sf.sections = new ArrayList<SectionHolder>();
+		String res = result.toString();
+		if(-1 == res.indexOf("relatedLists=anyType\\{")) {
+			Log.v(TAG, "No Related List...");
+			return;
+		}
+		
+		//String fn = "layouts=anyType";
+		String fn = "relatedLists=anyType";
+		int start = res.indexOf( fn );
+		
+		String kpn = "recordTypeMappings=anyType";
+		//String kpn = "recordTypeMappings=anyType";
+		
+		int end = res.indexOf( kpn );
+
+		String f = res.substring( start + fn.length() + 1 , end );
+		//Log.v(TAG, "orignal :" +  f );
+		
+		/** analyze start form 'detailLayoutSections' */
+		String[] dls = f.split("relatedLists=anyType\\{");
+
+		//System.out.println("0 : " + dls[0]);
+		//System.out.println("1 : " + dls[1]);
+		
+		int index = 0, e1 = 0;
+		for(String s : dls ){
+			//Log.v(TAG, s);
+			SectionHolder sh = new SectionHolder();
+			//sh.fields = new ArrayList<FieldHolder>();
+			getRelatedLabel(s, sh);
+			sf.related.add(sh);
+			/*
+			SectionHolder sh = new SectionHolder();
+			sh.fields = new ArrayList<FieldHolder>();
+
+			//getHeading(s, sh);
+			
+			sh.sectionOrder = index;
+			
+			if(!sh.name.equals("Address Information"))getLayoutItems(s, sh);
+			
+			index++;
+			sf.sections.add(sh);
+			*/
+			/*
+			s1 = fs[i].indexOf( "calculated=" );
+			e1 = fs[i].indexOf( ";", s1 );	
+			
+			
+			System.out.print(":calculated=" + fs[i].substring(s1 + "calculated=".length(), e1));
+				*/
+		}
+		
+		HashMap<String,LayoutHolder> te = new HashMap<String,LayoutHolder>();
+		te.put(sobject, sf);
+		SObjectDB.SOBJECTS.put(sobject, sf);
+		
+	}
+	
+	/** get Related Section Header of layout */
+	private void getRelatedLabel(String s, SectionHolder sh) {		
+		int s1 = s.indexOf( "label=" );
+		int e1 = s.indexOf( ";", s1 );	
+		
+		String ret = s.substring(s1 + "label=".length(), e1);		
+		Log.v(TAG, ret);
+		sh.name = ret;
+	}
+	
+	/** get Section Header of layout */
 	private void getHeading(String s, SectionHolder sh) {		
 		int s1 = s.indexOf( "heading=" );
 		int e1 = s.indexOf( ";", s1 );	
@@ -373,7 +488,7 @@ public class ApexApiResultHandler {
 			s1 = a.indexOf( "label=", e1 );
 			e1 = a.indexOf( ";", s1 );
 			fs.label = a.substring(s1 + "label=".length(), e1);
-			//Log.v(TAG, "\tlabel=" + fs.label);
+			Log.v(TAG, "\tlabel=" + fs.label);
 			
 			s1 = a.indexOf( "layoutComponents=anyType", e1 );
 			if(-1 == s1) continue;
@@ -393,6 +508,11 @@ public class ApexApiResultHandler {
 			e1 = a.indexOf( ";", s1 );
 			fs.required = a.substring(s1 + "required=".length(), e1).equals("true") ? true : false;;			
 			//Log.v(TAG, "\trequired=" + fs.required);
+			
+			s1 = a.indexOf( "type=", e1 );
+			e1 = a.indexOf( ";", s1 );
+			fs.type = a.substring(s1 + "type=".length(), e1);
+			
 			
 			sh.fields.add(fs);
 		}

@@ -18,25 +18,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".salesforce.sobject.SObjectList" android:label="@string/main_menu"></activity>   
+        <activity android:name=".salesforce.sobject.SObjectList" android:label="List Information"></activity>   
+        <activity android:name=".salesforce.sobject.MainMenu" android:label="Main Menu - Dai Odahara"></activity>   
         <!-- <activity android:name=".sobject.SFDCTestList" android:label="Salesforce Android"></activity>  -->
 		<!-- list  -->
         <activity android:name=".salesforce.viewer.DocumentViewer" android:label="@string/document_viewer"></activity>
-        <activity android:name=".salesforce.sobject.AccountList" android:label="@string/acc_list"></activity>
-        <!--  <activity android:name=".sobject.ContactList" android:label="@string/con_list"></activity>  -->
-        <!--  <activity android:name=".sobject.OpportunityList" android:label="@string/opp_list"></activity>  -->
-        <!--  <activity android:name=".sobject.CaseList" android:label="@string/case_list"></activity>  -->
-        <!--  <activity android:name=".sobject.EventList" android:label="@string/event_list"></activity>  -->
-        <!-- <activity android:name=".sobject.TaskList" android:label="@string/task_list"></activity>-->
-        <activity android:name=".salesforce.sobject.AccountInfo" android:label="@string/acc_info"></activity>
-        <activity android:name=".salesforce.sobject.OpportunityInfo" android:label="@string/opp_info"></activity>
-        <activity android:name=".salesforce.sobject.OpportunityList" android:label="@string/opp_list"></activity>
+        <activity android:name=".salesforce.sobject.SObjectDetailInfo" android:label="Detail Information"></activity>
+        
         <!-- <activity android:name=".sobject.EventInfo" android:label="@string/event_info"></activity>-->
         <activity android:name=".salesforce.viewer.ChartViewer" android:label="Online DashBoard"></activity>
-        <activity android:name=".salesforce.frame.TabMenuMaker" android:label="Salesforce Android"></activity>
         <activity android:name=".salesforce.frame.CalendarComponent" android:label="Calendar"></activity>
         
         <activity android:name=".google.operation.TutorialOnMaps" android:label="map"></activity>
+
+        <activity android:name=".web.BrowserViewer" android:label="Browser"></activity>
              
     </application>
 </manifest> 
