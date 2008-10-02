@@ -43,7 +43,7 @@ public class MainMenu extends ListActivity  {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
-		setContentView(R.layout.list_array);
+		setContentView(R.layout.main_menu);
 		
 		ListView lv = (ListView) findViewById(android.R.id.list);
 		ColorDrawable dw = new ColorDrawable(0xFFf0f8ff);
@@ -112,6 +112,7 @@ public class MainMenu extends ListActivity  {
 		private Context mContext;
 
 		public SObjectListAdapter(Context context) {
+
 			mContext = context;
 		}
 
@@ -150,8 +151,11 @@ public class MainMenu extends ListActivity  {
 
 			tv.setText(sObjects[position]);
 			tv.setTextSize(20);
-			tv.setTextColor(0xCC000000);
-			tv.setBackgroundColor(0xEDf0f8ff);
+			//tv.setTextColor(0xCC000000);
+			//tv.setBackgroundColor(0xEDf0f8ff);
+			
+			tv.setBackgroundColor(0xDDf0f8ff);			
+			tv.setTextColor(0xFF000044);
 			addItem(data, sObjects[position], new Intent());
 
 			return tv;
