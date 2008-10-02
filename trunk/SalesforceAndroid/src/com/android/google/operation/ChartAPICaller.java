@@ -25,8 +25,19 @@ import static com.googlecode.gchartjava.Color.*;
 
 import com.googlecode.gchartjava.AxisStyle.AlignmentEnum;
 
+/**
+ * This class manages Google Chart API. At present, each parameters are 
+ * static value, but in future it handles parameters dynamically.
+ * 
+ * @author Dai Odahara
+ * 
+ */
 public class ChartAPICaller {
 
+	/** 
+	 * main method. the main is never used with android. this is just for chart api calling test usage.
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		ChartAPICaller ig = new ChartAPICaller();
 
@@ -39,9 +50,6 @@ public class ChartAPICaller {
 		lcurl = ig.getPieChartURL();
 		System.out.println(lcurl);
 
-	}
-
-	public ChartAPICaller() {
 	}
 
 	public String getPieChartURL() {      
@@ -119,6 +127,5 @@ public String getLineChartURL() {
         //System.out.println(chart.createURLString());
         //String expectedString = "http://chart.apis.google.com/chart?cht=lc&chs=600x450&chxs=0,FFFFFF,12,0|1,FFFFFF,12,0|2,FFFFFF,12,0|3,FFFFFF,12,0|4,FFFFFF,14,0&chts=FFFFFF,14&chls=3,1,0|3,1,0&chxp=1,50.0|4,50.0&chf=bg,s,1F1D1D|c,lg,0,363433,1.0,2E2B2A,0.0&chdl=myWebsite.com|myCompetition.com&chd=e:AAczWZv.5m,zMmZWZMzGa&chtt=Web+Traffic|(in+billions+of+hits)&chg=20,20,3,2&chxr=1,0,100|4,0,100&chxt=y,y,x,x,x&chco=CA3D05,87CEEB&chxl=0:||25|50|75|100|1:|Hits|2:|Nov|Dec|Jan|Feb|Mar|3:|2007|2007|2008|2008|2008|4:|Month";
         return chart.createURLString();
-}
-
+	}
 }

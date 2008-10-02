@@ -51,7 +51,7 @@ public class AndroidHttpTransport extends Transport {
 	        connection = getServiceConnection();
 	        connection.connect();
 
-	        connection.setRequestProperty("User-Agent", "ApexG/2.0");
+	        connection.setRequestProperty("User-Agent", "SalesforceAndroid");
 	        connection.setRequestProperty("SOAPAction", soapAction);	        
 	        connection.setRequestProperty("Content-Type", "text/xml");
 	        connection.setRequestProperty("Connection", "keep-alive");
