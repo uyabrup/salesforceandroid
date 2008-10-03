@@ -36,7 +36,7 @@ public class SObjectSQLite {
 	public void create (Context context, String table, String sobject) {
 		try {
 
-			db = context.openOrCreateDatabase(DB_NAME, DB_VERSION, null);
+			//db = context.openOrCreateDatabase(DB_NAME, DB_VERSION, null);
 			db.execSQL("drop table if exists " + sobject);
 			db.execSQL(table);
 		} catch (Exception ex) {
@@ -54,7 +54,7 @@ public class SObjectSQLite {
 				+ "SObject text not null"
 				+ ");";
 			
-			db = context.openOrCreateDatabase(DB_NAME, DB_VERSION, null);
+			//db = context.openOrCreateDatabase(DB_NAME, DB_VERSION, null);
 			db.execSQL("drop table if exists " + tableName);
 			db.execSQL(table);
 		} catch (Exception ex) {
@@ -89,8 +89,13 @@ public class SObjectSQLite {
 	}
 	*/
 	
+	/** open db */
+	public void open(Context context) {
+		if(null == db || !db.isOpen())db = context.openOrCreateDatabase(DB_NAME, DB_VERSION, null);
+	}
+	
 	/** close the db */
 	public void close() {
-		db.close();
+		if(null != db)db.close();
 	}
 }
