@@ -10,8 +10,12 @@ import java.util.List;
 
 import com.android.salesforce.util.StaticInformation;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -23,7 +27,7 @@ import android.util.Log;
  * @author Dai Odahara
  * 
  */
-public class SObjectSQLite {
+public class SObjectSQLite extends Activity {
 	private static final String TAG = "SOjbectSQLite";
 	private static final String DB_NAME = "SObject";
 	private static final int DB_VERSION = 1;
@@ -37,10 +41,11 @@ public class SObjectSQLite {
 		try {
 
 			//db = context.openOrCreateDatabase(DB_NAME, DB_VERSION, null);
+			showErrorAsDialog(table);
 			db.execSQL("drop table if exists " + sobject);
 			db.execSQL(table);
 		} catch (Exception ex) {
-			db = null;
+			//db = null;
 			Log.v(TAG, ex.toString());
 		}
 	}
@@ -58,13 +63,14 @@ public class SObjectSQLite {
 			db.execSQL("drop table if exists " + tableName);
 			db.execSQL(table);
 		} catch (Exception ex) {
-			db = null;
+			//db = null;
 			Log.v(TAG, ex.toString());
 		}
 	}
 	
 	/** create table */
 	public long insert(ContentValues insertData, String table) {
+		Log.v(TAG, "Inserted:" + insertData.toString());
 		return db.insert(table, null, insertData);
 	}
 	
@@ -97,5 +103,13 @@ public class SObjectSQLite {
 	/** close the db */
 	public void close() {
 		if(null != db)db.close();
+	}
+	
+	/** show detail error message */
+	private void showErrorAsDialog(String msg) {
+		new AlertDialog.Builder(SObjectSQLite.this)
+        .setMessage(msg)
+        .show();
+
 	}
 }
