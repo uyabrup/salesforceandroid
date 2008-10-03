@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:background="#FFf0f8ff" android:layout_height="fill_parent">
+
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:layout_marginTop="14dip"
+		android:layout_marginLeft="24dip"
+		android:layout_marginBottom="12dip">
+
+	</LinearLayout>
+
+	<LinearLayout android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:paddingBottom="12dip">
+
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:textColor="#FF708091"
+			android:text="Search " />
+
+		<AutoCompleteTextView android:id="@+id/auto_complete_view"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:textColor="#EE000000" />
+
+
+	</LinearLayout>
+
+
+	<LinearLayout android:id="@+id/layout"
+		android:orientation="vertical" android:paddingLeft="8dip"
+		android:paddingTop="2dip" android:paddingBottom="12dip"
+		android:layout_width="fill_parent" android:paddingRight="8dip"
+		android:layout_height="wrap_content">
+
+
+		<ListView android:id="@id/android:list"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:textSize="18px"
+			android:textColor="#BBFFFFFF"
+			android:paddingBottom="7px" android:paddingTop="7px"
+			android:paddingLeft="5px" android:paddingRight="5px"
+			android:layout_marginBottom="6px" android:layout_marginTop="6px"
+			/>
+
+		<TextView android:id="@id/android:empty"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:textSize="16px"
+			android:textColor="#FF708091" android:text="No data" />
+
+		<!-- 
+			<TextView
+			android:id="@+id/item_label"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"			        
+			android:text=""/>
+			
+			<TextView
+			android:id="@+id/item_value"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text=""/>
+		-->
+	</LinearLayout>
+
+</LinearLayout>
