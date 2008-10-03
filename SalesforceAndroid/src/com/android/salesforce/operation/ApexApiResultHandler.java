@@ -236,11 +236,12 @@ public class ApexApiResultHandler {
 			s1 = fs[i].indexOf("name=", e1);
 			e1 = fs[i].indexOf(";", s1);
 			String name = fs[i].substring(s1 + "name=".length(), e1);
+			Log.v(TAG, "name=" + name);
 			
 			s1 = fs[i].indexOf("soapType=xsd:", e1);
 			e1 = fs[i].indexOf(";", s1);
-			String type = fs[i].substring(s1 + "soapType=xsd:".length(), e1).equals("int") ? "Integer" : "text";
-			Log.v(TAG, "soapType=xsd:" + type);
+			String type = fs[i].substring(s1 + "soapType=xsd:".length(), e1).equals("int") ? "integer" : "text";
+			Log.v(TAG, "\tsoapType=xsd:" + type);
 
 			
 			table.append(name + " " + type + ", ");
@@ -489,6 +490,8 @@ public class ApexApiResultHandler {
 			e1 = a.indexOf( ";", s1 );
 			fs.label = a.substring(s1 + "label=".length(), e1);
 			Log.v(TAG, "\tlabel=" + fs.label);
+			
+			//if(fs.label.equals("anyType{}"))continue;
 			
 			s1 = a.indexOf( "layoutComponents=anyType", e1 );
 			if(-1 == s1) continue;
