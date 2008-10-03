@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Salesforce Android - Dai Odahara</string>
+    <string name="app_name">Salesforce Android</string>
     <string name="main_menu">Main Menu</string>
     <string name="menu_sfdc_login">Salesforce Login</string>
     <!-- ============================== -->
