@@ -99,7 +99,7 @@ public class ApexApiResultHandler {
 			
 			String Id = s.substring(ss + "Id=".length(), es);
 			iv.put(Id, nav);
-			cv.put("Id", Id);
+			//cv.put("Id", Id);
 			
 			//Log.v(TAG, "\tId=" + s.substring(ss + "Id=".length(), es));
 		
@@ -165,7 +165,7 @@ public class ApexApiResultHandler {
 	/** analyze apex describe api call result */	
 	public StringBuffer analyzeDescribeSObjectResults(Object result, String sobject) {
 
-		StringBuffer table = new StringBuffer("create table " + sobject + " (rowid integer primary key, ");
+		StringBuffer table = new StringBuffer("create table " + sobject + " (");
 		
 		String res = result.toString();
 		// System.out.println( res.length() );
@@ -243,7 +243,7 @@ public class ApexApiResultHandler {
 			String type = fs[i].substring(s1 + "soapType=xsd:".length(), e1).equals("int") ? "integer" : "text";
 			Log.v(TAG, "\tsoapType=xsd:" + type);
 
-			
+			if(name.equals("Id"))type += " primary key";
 			table.append(name + " " + type + ", ");
 
 			// SObjectDB.AccountLayout.append(fs[i].substring(s1 +
