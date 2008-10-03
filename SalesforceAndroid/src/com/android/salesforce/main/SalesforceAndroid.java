@@ -57,7 +57,7 @@ public class SalesforceAndroid extends Activity implements
 	private static StringBuffer table = new StringBuffer();;
 	private static SObjectSQLite ss = new SObjectSQLite();
 	private static ApexApiCaller bind = new ApexApiCaller();
-	private static ArrayList<ContentValues> cv = new ArrayList<ContentValues>();
+	//private static ArrayList<ContentValues> cv = new ArrayList<ContentValues>();
 	private static ViewFlipper VFlipper;
 	private static TextView mSwitcher;
 	private static EditText UserId;
@@ -309,9 +309,9 @@ public class SalesforceAndroid extends Activity implements
 				bind.describeLayout("Opportunity", rds);
 				
 				// Case
-				//describeSObject("Case");
+				describeSObject("Case");
 				//rds = "012400000005OnC";
-				//bind.describeLayout("Case", rds);
+				bind.describeLayout("Case", rds);
 				
 				// Contact
 				describeSObject("Contact");
@@ -335,8 +335,8 @@ public class SalesforceAndroid extends Activity implements
 				query("Event");
 				query("Task");
 				query("Lead");
-				//query("Case");
 				query("Opportunity");
+				query("Case");
 				query("Contact");				
 				query("Account");
 				
@@ -412,15 +412,19 @@ public class SalesforceAndroid extends Activity implements
 	// query caller
 	private void query(String sobject){
 		SObject = sobject;
-		cv = bind.query(sobject);
+		ArrayList<ContentValues> cv = bind.query(sobject);
 		handler.post(new Runnable() {
 			public void run() {
 					mSwitcher.setText("Querying " + SObject + "...");
 			}
 		});
+		
+		/** this insert seems to cause an illegalstatement exception */
+		/**
 		for(ContentValues c : cv) {
 			ss.insert(c, sobject);
 		}
+		*/
 	}
 	
 }
