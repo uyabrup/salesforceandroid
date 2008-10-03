@@ -57,7 +57,7 @@ public class ChartViewer extends Activity implements
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		setContentView(R.layout.chart_array);
+		setContentView(R.layout.chart_viewer);
 
 		Button button = (Button) findViewById(R.id.loading_button);
 		lv = (TextView) findViewById(R.id.loading_title);
