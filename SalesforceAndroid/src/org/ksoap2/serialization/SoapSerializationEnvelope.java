@@ -26,7 +26,7 @@ import java.util.Vector;
 
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.SoapFault;
-import org.kxml2.kdom.Node;
+//import org.kxml2.kdom.Node;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlSerializer;

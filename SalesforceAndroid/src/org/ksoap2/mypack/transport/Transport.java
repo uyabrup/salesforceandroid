@@ -27,7 +27,7 @@ import java.io.*;
 
 import org.ksoap2.*;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.kxml2.io.*;
+//import org.kxml2.io.*;
 import org.xmlpull.v1.*;
 
 import android.util.Log;
@@ -61,7 +61,8 @@ abstract public class Transport {
      * Sets up the parsing to hand over to the envelope to deserialize.
      */
     protected void parseResponse(SoapEnvelope envelope, InputStream is) throws XmlPullParserException, IOException {
-        XmlPullParser xp = new KXmlParser();
+    	//XmlPullParserFactory xppf = new XmlPullParserFactory();
+    	XmlPullParser xp =  XmlPullParserFactory.newInstance().newPullParser();// new KXmlSerializer();
         xp.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
         xp.setInput(is, null);
         envelope.parse(xp);
@@ -73,13 +74,21 @@ abstract public class Transport {
     protected byte[] createRequestData(SoapEnvelope envelope) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.write(xmlVersionTag.getBytes());
-        XmlSerializer xw = new KXmlSerializer();
-        xw.setOutput(bos, null);
+        XmlSerializer xw;
+        
+        try {
+			xw = XmlPullParserFactory.newInstance().newSerializer();
+
+			xw.setOutput(bos, null);
 
 //        envelope.write(xw);
-        ((SoapSerializationEnvelope)envelope).write(xw);
+			((SoapSerializationEnvelope)envelope).write(xw);
               
-        xw.flush();
+			xw.flush();
+		} catch (XmlPullParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}// new KXmlSerializer();
         bos.write('\r');
         bos.write('\n');
         bos.flush();

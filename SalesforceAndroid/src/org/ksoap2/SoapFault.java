@@ -22,7 +22,8 @@ package org.ksoap2;
 
 import java.io.*;
 import org.xmlpull.v1.*;
-import org.kxml2.kdom.*;
+//import org.kxml2.kdom.*;
+import org.kxml2.mypack.xml.Node;
 
 /**
  * Exception class encapsulating SOAP Faults
