@@ -60,18 +60,29 @@ abstract public class Transport {
     /**
      * Sets up the parsing to hand over to the envelope to deserialize.
      */
-    protected void parseResponse(SoapEnvelope envelope, InputStream is) throws XmlPullParserException, IOException {
+    protected void parseSoapResponse(SoapSerializationEnvelope envelope, InputStream is) throws XmlPullParserException, IOException {
     	//XmlPullParserFactory xppf = new XmlPullParserFactory();
     	XmlPullParser xp =  XmlPullParserFactory.newInstance().newPullParser();// new KXmlSerializer();
         xp.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
         xp.setInput(is, null);
-        envelope.parse(xp);
+        envelope.parseSoap(envelope, xp);
+    }
+    
+
+    /**
+     * Sets up the parsing to hand over to the envelope to deserialize.
+     */
+    protected void parseXmlResponse(SoapSerializationEnvelope envelope, InputStream is, String ename) throws XmlPullParserException, IOException {
+    	XmlPullParser xp =  XmlPullParserFactory.newInstance().newPullParser();// new KXmlSerializer();
+        xp.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
+        xp.setInput(is, null);
+        envelope.parseXml(envelope, xp, ename);
     }
 
     /**
      * Serializes the request.
      */
-    protected byte[] createRequestData(SoapEnvelope envelope) throws IOException {
+    protected byte[] createRequestData(SoapEnvelope envelope, String namespace) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.write(xmlVersionTag.getBytes());
         XmlSerializer xw;
@@ -82,7 +93,7 @@ abstract public class Transport {
 			xw.setOutput(bos, null);
 
 //        envelope.write(xw);
-			((SoapSerializationEnvelope)envelope).write(xw);
+			((SoapSerializationEnvelope)envelope).write(xw, namespace);
               
 			xw.flush();
 		} catch (XmlPullParserException e) {
@@ -132,6 +143,6 @@ abstract public class Transport {
      * @param envelope
      *            the envelope the contains the information for the call.
      */
-    abstract public void call(String targetNamespace, SoapEnvelope envelope) throws IOException, XmlPullParserException;
+    abstract public void call(String targetNamespace, SoapSerializationEnvelope envelope) throws IOException, XmlPullParserException;
 
 }

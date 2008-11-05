@@ -4,10 +4,13 @@
 
 package com.android.google.operation;
 
+import android.util.Log;
+
 import com.googlecode.gchartjava.ArraysUtil;
 import com.googlecode.gchartjava.AxisInfo;
 import com.googlecode.gchartjava.AxisStyle;
 import com.googlecode.gchartjava.BarChart;
+import com.googlecode.gchartjava.BarChartDataSeries;
 import com.googlecode.gchartjava.Color;
 import com.googlecode.gchartjava.Data;
 import com.googlecode.gchartjava.DataEncoding;
@@ -24,6 +27,7 @@ import com.googlecode.gchartjava.SolidFill;
 import static com.googlecode.gchartjava.Color.*;
 
 import com.googlecode.gchartjava.AxisStyle.AlignmentEnum;
+import static com.googlecode.gchartjava.ArraysUtil.asUnmodifiableList;
 
 /**
  * This class manages Google Chart API. At present, each parameters are 
@@ -38,6 +42,8 @@ public class ChartAPICaller {
 	 * main method. the main is never used with android. this is just for chart api calling test usage.
 	 * @param args
 	 */
+	private static final String TAG = "ChartAPICaller";
+	
 	public static void main(String[] args) {
 		ChartAPICaller ig = new ChartAPICaller();
 
@@ -67,16 +73,57 @@ public class ChartAPICaller {
 
 }
 
+    public String getBarChartURL(String header, String footer, String leftLabel){
+        //Defining data series.
+        BarChartDataSeries team1 = new BarChartDataSeries(new Data(1800,3000),BLUEVIOLET,"Closed");
+        //BarChartDataSeries team2 = new BarChartDataSeries(new Data(8,35,11,5),ORANGERED,"Team B");
+        //BarChartDataSeries team3 = new BarChartDataSeries(new Data(10,50,30,70),LIMEGREEN,"Team C");
+        
+        //Instantiating chart.
+        //BarChart chart = new BarChart(team1,team2,team3);
+        BarChart chart = new BarChart(team1);
+
+        //Defining axis info and styles
+        AxisStyle axisStyle = new AxisStyle(BLACK,18,AlignmentEnum.CENTER);
+        AxisInfo score = new AxisInfo(0,3000,asUnmodifiableList(50f),leftLabel);
+        score.setAxisStyle(axisStyle);
+        AxisInfo year = new AxisInfo(0,3000,asUnmodifiableList(50f),footer);
+        year.setAxisStyle(axisStyle);
+        
+        //Adding axis info to chart.
+        chart.addXAxisInfo(new AxisInfo(1800, 3000));
+        chart.addYAxisInfo(new AxisInfo(0,4000));
+        chart.addYAxisInfo(score);
+        chart.addXAxisInfo(year);
+        
+        chart.setSize(600, 500);
+        chart.setSpaceBetweenGroupsOfBars(100);
+        //chart.setTitle(header,BLACK,16);
+        //chart.setGrid(new LineStyle(3,3,2), 10, 10);
+        chart.setBackgroundFill(new SolidFill(ALICEBLUE));
+        LinearGradientFill fill = new LinearGradientFill(0,LAVENDER,1);
+        fill.addColorAndOffset(WHITE,0);
+        chart.setAreaFill(fill);
+        Log.v(TAG, chart.createURLString());
+        //String expectedString = "http://chart.apis.google.com/chart?cht=bvg&chs=600x450&chxs=1,000000,13,0|3,000000,13,0&chts=000000,16&chxp=1,50.0|3,50.0&chf=bg,s,F0F8FF|c,lg,0,E6E6FA,1.0,FFFFFF,0.0&chdl=Team+A|Team+B|Team+C&chd=e:jMbhmZ0e,FIWZHCDN,GagATNsz&chtt=Team+Scores&chg=10,10,3,2&chbh=23,4,20&chxr=0,0,100|1,0,100|3,0,100&chxt=y,y,x,x&chco=8A2BE2,FF4500,32CD32&chxl=1:|Score|2:|2002|2003|2004|2005|3:|Year";
+       return "http://chart.apis.google.com/chart?cht=bvs&chs=600x500&chg=25,25&chxt=x,y&chxl=0:|1800|3000|1:|0|1000|2000|3000&chco=FFC266&chd=t:1800,3000&chds=0,3000&chbh=100&chdl=Closed&chxt=x,y&chxs=0,0000dd,22|1,00aa00,22";
+        //return chart.createURLString();
+        // assertEquals("Junit error", expectedString,chart.createURLString());
+}
+
+	
+	
 public String getOmeterChartURL() {
         //GoogleOMeter chart = new GoogleOMeter(90,"Archieved",new Color("1148D4"), new Color("5766DE"), new Color("DB3270"), new Color("D41111"));
 		GoogleOMeter chart = new GoogleOMeter(90,"Goal",new Color("FF0000"), new Color("FF6633"), new Color("FFFF00"), new Color("99FF00"), new Color("009900"));
     	chart.setSize(500, 250);
-    	http://chart.apis.google.com/chart?chs=225x125&cht=gom&chd=t:70&chl=Hello
+    	//http://chart.apis.google.com/chart?chs=225x125&cht=gom&chd=t:70&chl=Hello
         //chart.setBackgroundFill(new SolidFill(new Color("1F1D1D")));
         chart.setBackgroundFill(new SolidFill(new Color("FFFFFF")));
 
         String url = chart.createURLString();
-        return url;}
+        return url;
+}
 
 public String getLineChartURL() {
         //Defining Line

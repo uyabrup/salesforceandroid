@@ -4,12 +4,26 @@
 
 package com.android.salesforce.main;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import org.ksoap2.serialization.KvmSerializable;
 
 import com.android.R;
-import com.android.animation.Rotate3dAnimation;
+//import com.android.animation.Rotate3dAnimation;
 
-import com.android.salesforce.database.SObjectSQLite;
+import com.android.salesforce.database.SObjectDataFactory;
 import com.android.salesforce.operation.ApexApiCaller;
 import com.android.salesforce.sobject.MainMenu;
 import com.android.salesforce.util.SObjectDB;
@@ -55,7 +69,7 @@ public class SalesforceAndroid extends Activity implements
 	private final Handler handler = new Handler();
 	private static SalesforceAndroid sa;
 	private static StringBuffer table = new StringBuffer();;
-	private static SObjectSQLite ss = new SObjectSQLite();
+	private static SObjectDataFactory ss = new SObjectDataFactory();
 	private static ApexApiCaller bind = new ApexApiCaller();
 	//private static ArrayList<ContentValues> cv = new ArrayList<ContentValues>();
 	private static ViewFlipper VFlipper;
@@ -66,6 +80,7 @@ public class SalesforceAndroid extends Activity implements
 	private static boolean initialProcess = false;
 	private static Button loginButton;
 	private static String SObject;
+	private static String json;
     private ViewGroup mContainer;
     
 	/** Called when the activity is first created. */
@@ -109,21 +124,33 @@ public class SalesforceAndroid extends Activity implements
 		UserId = (EditText) findViewById(R.id.salesforce_user_id);
 		UserPassword = (EditText) findViewById(R.id.salesforce_user_password);
 
-		UserId.setText("android@vv.com");
-		UserPassword.setText("google12345");
+		//UserId.setText("android@vv.com");
+		//UserPassword.setText("google12345");
 
+		//UserId.setText("dai.odahara@google.com");
+		//UserPassword.setText("sfdcj12345");
+
+		
 		loginButton = (Button) findViewById(R.id.salesforce_login);
 		loginButton.setAnimation(in);
 
 		loginButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				 //login = true;
+				
+				if(UserId.getText().toString().length() == 0 || UserPassword.getText().toString().length() == 0) {
+					mSwitcher.setVisibility(0);
+					mSwitcher.setText("Enter Id/Pw");
+					return;
+				}
+				
 				if (login) {
 					//applyRotation(0, 180);
 					Log.v(TAG, "Already logged in...");
 					// applyRotation(-1, 0, 90);
 
 					Intent intent = new Intent();
+					intent.putExtra("json", json);
 					//intent.setClass(SalesforceAndroid.this, TabMenuMaker.class);
 					intent.setClass(SalesforceAndroid.this, MainMenu.class);
 					startActivity(intent);
@@ -203,15 +230,16 @@ public class SalesforceAndroid extends Activity implements
 		 * Create a new 3D rotation with the supplied parameter The animation
 		 * listener is used to trigger the next animation
 		 */
+		/**
 		final Rotate3dAnimation rotation = new Rotate3dAnimation(start, end,
 				centerX, centerY, 310.0f, true);
 		rotation.setDuration(500);
 		rotation.setFillAfter(true);
 		rotation.setInterpolator(new AccelerateInterpolator());
 		//rotation.setAnimationListener(new MainMenu());
-
+		
 		mContainer.startAnimation(rotation);
-
+		*/
 	}
 
 	/** Creating Menu */
@@ -284,11 +312,36 @@ public class SalesforceAndroid extends Activity implements
 				});
 				
 				ss.open(sa);
+				boolean success = false;
 				// Login Call
-				login();
+				if(!(login=login())){
+					handler.post(new Runnable() {
+						public void run() {
+							mSwitcher.setText("Login Fault\nCheck ID, PW, Grant IP Addresses...");
+							loginButton.setText("Retry");
+							loginButton.setClickable(true);
+						}
+					});
+					return;
+				}
+				
+				if(!isActive()){
+					handler.post(new Runnable() {
+						public void run() {
+							mSwitcher.setText("You're not allowed to use now...");
+							loginButton.setText("Retry");
+							loginButton.setClickable(true);
+						}
+					});
+					return;
+				}
 				
 				// Create Keyprefix x Sobject createKeyprefixSObject
 				anaylizeKeyPreFix();
+				
+				// call metadata in advnace
+				//String mresult = retrieveMetaData();
+				
 				
 				// DescribeSObject
 				describeSObject("Event");
@@ -329,9 +382,10 @@ public class SalesforceAndroid extends Activity implements
 				bind.describeLayout("Account", rds);
 				
 				describeSObject("User");
-
+					
 				
 				// query
+				
 				query("Event");
 				query("Task");
 				query("Lead");
@@ -345,14 +399,18 @@ public class SalesforceAndroid extends Activity implements
 				
 				bind.queryUser();
 				
+				/*
+				String id = checkStatus(mresult);
+				String zip = checkRetrieveStatus(id);
+				writeData(zip);
+				unZip("data/data/com.android/files/data5.zip");
+				Log.v(TAG, "Unziping zipfile");
+				//readFile("data/data/com.android/files/reports_SFA_OpportunityByPhase.report");
+				json = readXmlFileAsJson("data/data/com.android/files/dashboards_Folder_OpportunityDashboard.dashboard");
+				*/
+				
 				ss.close();
 				// proccess after calling api
-				//initialProcess = true;
-				handler.post(new Runnable() {
-					public void run() {
-						//loginButton.setFocusable(true);
-					}
-				});
 
 				handler.post(new Runnable() {
 					public void run() {
@@ -383,15 +441,118 @@ public class SalesforceAndroid extends Activity implements
 
 	}
 
+	// metadata retrieve caller
+	private String retrieveMetaData() {
+		Log.v(TAG, "retrieve Metadata...");
+		String ret = bind.retrieveMetaData();
+		return ret;
+	}
+	
+	// metadata retrieve caller
+	private String checkStatus(String result) {
+		Log.v(TAG, "checkStatus of Metadata...");
+		String id = bind.checkStatus(result);
+		return id;
+	}
+	
+	// metadata retrieve caller
+	private String  checkRetrieveStatus(String id) {
+		Log.v(TAG, "checkRetrieveStatus of Metadata...");
+		String zip = bind.checkRetrieveStatus(id);
+		return zip;
+	}
+	
+	// write data
+	private void writeData(String data) {
+		Log.v(TAG, "Writing data into local file...");
+		ss.write(sa, data);
+	}
+	
+	/**
+	 * unzip file of zipfile and copy the fils in other directory
+	 * @param fileName
+	 */
+	private void unZip(String fileName) {
+		Log.v(TAG, "unzipping file...");
+		ss.unZip(fileName);
+	}
+
+	/** read file of give file
+	 * 
+	 * @param fileName
+	 */
+	private String readXmlFileAsJson(String fileName) {
+		Log.v(TAG, "reading xml file as json...");
+		String ret = bind.readFileAsStream(fileName);
+		return ret;
+	}
+	/** read file of give file
+	 * 
+	 * @param fileName
+	 */
+	private void readFile(String fileName) {
+	      BufferedReader br = null;
+		try {
+			  //String tfn = fileName.replaceAll("/", "_");
+		      br = new BufferedReader(new FileReader(fileName));
+		      String msg = "";
+		      StringBuffer sb = new StringBuffer();
+		      while(null != (msg = br.readLine())) {
+		    	  Log.v(TAG, msg);
+		    	  sb.append(msg.trim());
+		      }
+		      
+		      Pattern pattern = Pattern.compile(".*.report");
+		      Matcher matcher = pattern.matcher(fileName);
+		      if(matcher.matches())ss.parseReportXML(sb.toString());
+
+		      pattern = Pattern.compile(".*.dashboard");
+		      matcher = pattern.matcher(fileName);
+		      if(matcher.matches())ss.parseDashboardXML(sb.toString());
+
+		      ss.parseReportXML(sb.toString());
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			try {
+				br.close();
+			} catch(IOException ex) {
+				ex.printStackTrace();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			} 
+		}
+	}
+	
 	// login caller
-	private void login(){
+	private boolean login(){
 		handler.post(new Runnable() {
 			public void run() {
 				mSwitcher.setText("Authenticating...");
 			}
 		});
-		login = bind.login();
+
 		Log.v(TAG, "Login Result : " + login);
+
+		if(bind.login())return true;
+		else return false;
+	}
+	
+	// check is active
+	private boolean isActive(){
+		boolean isActive = bind.checkIsActive();
+		Log.v(TAG, "User Activeness : " + isActive);
+		
+		if(isActive)return true;
+		
+		handler.post(new Runnable() {
+			public void run() {
+				mSwitcher.setText("User is inActive...");
+			}
+		});
+		return false;
 	}
 	
 	// analize key prefix
@@ -399,8 +560,6 @@ public class SalesforceAndroid extends Activity implements
 		Log.v(TAG, "Creating Keyprefix x Sobject Table...");
 
 		ss.createKeyprefixSObject(sa);
-
-	
 	}
 	
 	// describeLayout caller

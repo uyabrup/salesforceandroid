@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Vector;
 
 import com.android.R;
 import com.android.google.operation.ChartAPICaller;
@@ -50,6 +52,8 @@ public class ChartViewer extends Activity implements
 	private final Handler handler = new Handler();
 	private static TextView lv;
 
+	private String json;
+	 
 	/**
 	 * Called when the activity is first created. TODO access to google chart
 	 * api server dynamically
@@ -59,6 +63,11 @@ public class ChartViewer extends Activity implements
 		super.onCreate(icicle);
 		setContentView(R.layout.chart_viewer);
 
+		// for temp json num
+        Bundle bundle = getIntent().getExtras();		
+        json = bundle.getString("json");
+        
+        
 		Button button = (Button) findViewById(R.id.loading_button);
 		lv = (TextView) findViewById(R.id.loading_title);
 		lv.setText("Loading...");
@@ -86,6 +95,49 @@ public class ChartViewer extends Activity implements
 		}
 	}
 
+	// make query from json
+	public HashMap<String, HashMap> cookQuery(String json) {
+		String queryString = "";
+		HashMap<String, HashMap> rnd = new HashMap<String, HashMap>();
+		String l = "components=anyType";
+		int sa = json.indexOf(l);
+		String temp = json.substring(sa, json.length());
+		//String temp = json.substring(sa + l.length() + 1, json.length());
+		//String[] items = temp.split(l + "\\{");
+		
+		//Log.v(TAG, temp);
+		String[] items = temp.split(l + "\\{");
+
+		int s1 = 0;
+		int e1 = 0;	
+		Vector<HashMap<String, String>> ds = new Vector<HashMap<String, String>>();
+		ApexApiCaller aac = new ApexApiCaller();
+		String name = "SFA_OpportunityByPhase";
+		String sobject = "Opportunity";
+		for(int i = 1; i < items.length; i++) {
+			Log.v(TAG, items[i]);
+			s1 = items[i].indexOf("};");
+			String[] lv = items[i].substring(0, s1).split("; ");
+			HashMap<String, String> dc = new HashMap<String, String>();
+			for(String b : lv) {
+				String[] lx = b.split("=");
+				//Log.v(TAG, lx[0] + "==" + lx[1]);
+				dc.put(lx[0], lx[1]);
+			}
+			
+			String report = dc.get("report").replaceAll("/", "_");
+			Log.v(TAG, "report:" + report);
+			if(!report.equals(name))continue;
+			
+			report = aac.readFileAsStream("data/data/com.android/files/reports_" + report + ".report");
+			queryString = aac.makeQuery(report);
+			rnd.put(name, aac.queryWith(queryString, sobject, name));
+			
+		}
+		return rnd;
+	}
+	
+	// load gchart api
 	public void processLoad() {
 
 		Thread t = new Thread(new Runnable() {
@@ -100,6 +152,30 @@ public class ChartViewer extends Activity implements
 					});
 					
 					ChartAPICaller ca = new ChartAPICaller();
+					
+			        Log.v(TAG, "onChart\n" + json);
+			        HashMap<String, HashMap> rnd = cookQuery(json);
+					String name = "SFA_OpportunityByPhase";
+					HashMap vars = rnd.get(name);
+					
+					final URL barUrl = new URL(ca.getBarChartURL("フェーズ別今月の商談状況", "Amount", "Sum of Amount"));
+					final ImageView ivb = (ImageView) findViewById(R.id.dashboard1);
+					final Bitmap b1 = BitmapFactory.decodeStream(barUrl.openStream());
+
+					handler.post(new Runnable() {
+						public void run() {
+							try {
+								ivb.setImageBitmap(b1);
+								TextView tv = (TextView) findViewById(R.id.dashboard1_title);
+								tv.setText("フェーズ別今月の商談状況");
+
+							} catch (Exception ex) {
+								Log.v(TAG, ex.toString());
+							}
+						}
+					});
+					
+					/**
 					final URL lineUrl = new URL(ca.getLineChartURL());
 					final ImageView iv1 = (ImageView) findViewById(R.id.dashboard1);
 					final Bitmap b1 = BitmapFactory.decodeStream(lineUrl.openStream());
@@ -116,7 +192,8 @@ public class ChartViewer extends Activity implements
 							}
 						}
 					});
-
+					*/
+					
 					final URL gomUrl = new URL(ca.getOmeterChartURL());
 					final ImageView iv2 = (ImageView) findViewById(R.id.dashboard2);
 					final Bitmap b2 = BitmapFactory.decodeStream(gomUrl.openStream());

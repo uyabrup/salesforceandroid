@@ -43,12 +43,55 @@ public class ApexApiResultHandler {
 		Log.v(TAG, "Session Id :" + StaticInformation.SESSION_ID);
 	}
 
-	/** extracts API server URL of salesforce force.com api */
-	public void extractAPIServerURL(Object result) {
+	/** extracts login user id of salesforce force.com api */
+	public void extractUserId(Object result) {
+		Log.v(TAG, "Start Extracting User Id");
 		String res = result.toString();
-		String si = "serverUrl=";
+		String si = "userId=";
 		int ss = res.indexOf(si);
 		int es = res.indexOf(' ', ss);
+		StaticInformation.USER_ID_18DIGITS = res.substring(ss + si.length(), es - 1);
+		Log.v(TAG, "User Id :" + StaticInformation.USER_ID_18DIGITS);
+	}
+	
+	/** extracts login user id of salesforce force.com api */
+	public boolean extractUserIsActive(Object result) {
+		Log.v(TAG, "Start Extracting User Id");
+		String res = result.toString();
+		
+		// Extract visualforce url if any
+		String si = "Android__visualforceUrl__c=";
+		int ss = res.indexOf(si);
+		int es = res.indexOf(' ', ss);
+		
+		StaticInformation.vUrl = res.substring(ss + si.length(), es - 1);
+		Log.v(TAG, "Visualforce Url :" + StaticInformation.vUrl);
+		
+		// Extract activeness flag
+		si = "Android__isActive__c=";
+		ss = res.indexOf(si);
+		es = res.indexOf(' ', ss);
+		//StaticInformation.USER_ID_18DIGITS = res.substring(ss + si.length(), es - 1);
+		Log.v(TAG, "User Active :" + res.substring(ss + si.length(), es - 1));
+		return Boolean.valueOf(res.substring(ss + si.length(), es - 1));
+	}
+	
+	/** extracts API server URL of salesforce force.com api */
+	public void extractAPIServerURL(Object result) {
+		Log.v(TAG, "Extracting API Server URL...");
+		String res = result.toString();
+
+		String si = "metadataServerUrl=";
+		int ss = res.indexOf(si);
+		int es = res.indexOf(' ', ss);
+		Log.v(TAG, "\tMETA DATA API Server URL : "
+				+ res.substring(ss + si.length(), es - 1));
+		StaticInformation.API_META_DATA_SERVER_URL = res.substring(ss
+				+ si.length(), es - 1);
+
+		si = "serverUrl=";
+		ss = res.indexOf(si);
+		es = res.indexOf(' ', ss);
 		Log.v(TAG, "\tAPI Server URL : "
 				+ res.substring(ss + si.length(), es - 1));
 		StaticInformation.API_SERVER_URL = res.substring(ss + si.length(),
@@ -79,7 +122,7 @@ public class ApexApiResultHandler {
 	}
 
 	/** save data into db (at present, hashmap object */
-	public ArrayList<ContentValues> saveData(String[] records, String sobject, HashSet<String> refTypeField) {
+	public ArrayList<ContentValues> saveData(String[] records, String sobject, HashSet<String> refTypeField, boolean cache) {
 		int ss = 0, es = 0;
 		/** for cache */
 		HashMap<String, HashMap> iv = new HashMap<String, HashMap>();
@@ -119,7 +162,8 @@ public class ApexApiResultHandler {
 			insertData.add(cv);
 			
 		}
-		SObjectDB.SOBJECT_DB.put(sobject, iv);
+		
+		if(cache)SObjectDB.SOBJECT_DB.put(sobject, iv);
 		
 		/**
 		for(String s : where) {
@@ -129,6 +173,60 @@ public class ApexApiResultHandler {
 		return insertData;
 
 	}
+	
+	/** save data into db (at present, hashmap object */
+	public HashMap retrieveData(String[] records, String name, boolean cache) {
+		int ss = 0, es = 0;
+		/** for cache */
+		//HashMap<String, HashMap> iv = new HashMap<String, HashMap>();
+		StringBuffer refId = new StringBuffer();
+		
+		/** for local db */
+		//ArrayList<ContentValues> insertData  = new ArrayList<ContentValues>();
+		HashMap nav = new HashMap();
+		for(String s : records) {
+			Log.v(TAG, s);
+			//HashMap nav = new HashMap();
+			//ContentValues cv = new ContentValues();
+			
+			//nav.put("name", name);
+			ss = s.indexOf("Id=");
+			es = s.indexOf("; ", ss);
+			
+			String Id = s.substring(ss + "Id=".length(), es);
+			nav.put(Id, nav);
+			//cv.put("Id", Id);
+			
+			//Log.v(TAG, "\tId=" + s.substring(ss + "Id=".length(), es));
+		
+			String[] rr = s.split("; ");
+			//Log.v(TAG, "\t\t" + "SObjectType=" + nav.get("SObjectType"));
+			
+			for(String r : rr) {
+				// 1st arg is value, 2nd arg is value
+				String[] tt = r.split("=");
+				Log.v(TAG, "\t" + tt[0] + "=" + tt[1]);
+
+				//if(refTypeField.contains(tt[0]))setQueryWherePool(tt[1]);				
+
+				nav.put(tt[0], tt[1]);
+				//cv.put(tt[0], tt[1]);
+			}
+			//insertData.add(cv);
+			
+		}
+		
+		//if(cache)SObjectDB.SOBJECT_DB.put(sobject, iv);
+		
+		/**
+		for(String s : where) {
+			Log.v(TAG, "Added Id :" + s);
+		}
+		*/
+		return nav;
+
+	}
+	
 	
 	/** analyze sobject type to analyze first 3 digits and set QueryWherePool */
 	private void setQueryWherePool(String value) {
