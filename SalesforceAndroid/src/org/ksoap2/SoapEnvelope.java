@@ -22,12 +22,15 @@ package org.ksoap2;
 
 import java.io.*;
 
+import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapSerializationEnvelope;
 //import org.kxml2.kdom.*;
-import org.xmlpull.v1.*;
-import org.kxml2.mypack.xml.*;
-
 import com.android.salesforce.util.StaticInformation;
+import org.xmlpull.v1.*;
+import org.kxml2.mypack.*;
+import org.kxml2.mypack.xml.Element;
+import org.kxml2.mypack.xml.Node;
 
 /**
  * A SOAP envelope, holding head and body objects. While this basic envelope
@@ -48,6 +51,10 @@ public class SoapEnvelope {
     public static final String ENC2001 = "http://www.w3.org/2001/12/soap-encoding";
     /** Namespace constant: http://schemas.xmlsoap.org/soap/envelope/ */
     public static final String ENV = "http://schemas.xmlsoap.org/soap/envelope/";
+    /** Namespace constant: http://schemas.xmlsoap.org/soap/envelope/ */
+    public static final String SOAP = "http://schemas.xmlsoap.org/wsdl/soap/";
+    /** Namespace constant: http://schemas.xmlsoap.org/soap/envelope/ */
+    public static final String META = "http://soap.sforce.com/2006/04/metadata";
     /** Namespace constant: http://schemas.xmlsoap.org/soap/encoding/ */
     public static final String ENC = "http://schemas.xmlsoap.org/soap/encoding/";
     /** Namespace constant: http://www.w3.org/2001/XMLSchema */
@@ -58,7 +65,10 @@ public class SoapEnvelope {
     public static final String XSD1999 = "http://www.w3.org/1999/XMLSchema";
     /** Namespace constant: http://www.w3.org/1999/XMLSchema */
     public static final String XSI1999 = "http://www.w3.org/1999/XMLSchema-instance";
-
+    
+   // public static final String METADATA_TNS = "http://soap.sforce.com/2006/04/metadata";
+    
+    
     /**
      * Returns true for the string values "1" and "true", ignoring upper/lower
      * case and whitespace, false otherwise.
@@ -104,7 +114,9 @@ public class SoapEnvelope {
     public String xsi;
     /** Xml Schema data namespace, set by the constructor */
     public String xsd;
-
+    /** salesforce meta data namespace, set by the constructor */
+    public String meta;
+    
     /**
      * Initializes a SOAP Envelope. The version parameter must be set to one of
      * VER10, VER11 or VER12
@@ -123,31 +135,48 @@ public class SoapEnvelope {
             env = SoapEnvelope.ENV;
         } else {
             enc = SoapEnvelope.ENC2001;
-            env = SoapEnvelope.ENV2001;
+            env = SoapEnvelope.ENV2001;         
         }
+        meta = "ns1";
     }
 
     /** Parses the SOAP envelope from the given parser */
-    public void parse(XmlPullParser parser) throws IOException, XmlPullParserException {
+    public void parseXml(SoapSerializationEnvelope envelope, XmlPullParser parser, String ename) throws IOException, XmlPullParserException {	    
+	    //parser.require(XmlPullParser.START_TAG, env, ename);
+    	envelope.parseXml(parser);
+	    //parser.require(XmlPullParser.END_TAG, env, ename);
+	}
+    
+    /** Parses the SOAP envelope from the given parser */
+    public void parseSoap(SoapSerializationEnvelope envelope, XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.nextTag();
         parser.require(XmlPullParser.START_TAG, env, "Envelope");
         encodingStyle = parser.getAttributeValue(env, "encodingStyle");
         parser.nextTag();
-        if (parser.getEventType() == XmlPullParser.START_TAG && parser.getNamespace().equals(env) && parser.getName().equals("Header")) {
-            parseHeader(parser);
+        //if (parser.getEventType() == XmlPullParser.START_TAG && parser.getNamespace().equals(env) && parser.getName().equals("Header")) {
+        //System.out.println("Header is? : " + parser.getName());
+        if (parser.getName().equals("Header")) {
+            System.out.println("InHeader");
+        	parser.require(XmlPullParser.START_TAG, env, "Header");
+        	parseHeader(parser);
             parser.require(XmlPullParser.END_TAG, env, "Header");
             parser.nextTag();
         }
+        //System.out.println("33Header is? : " + parser.getName());
         parser.require(XmlPullParser.START_TAG, env, "Body");
         encodingStyle = parser.getAttributeValue(env, "encodingStyle");
- //       System.out.println("SoapEnvelope#parse : " + parser.getName());
-        parseBody(parser);
+        //System.out.println("22SoapEnvelope#parse : " + parser.getName());
+        envelope.parseBody(parser);
+        //System.out.println("44SoapEnvelope#parse : " + parser.getName());
         parser.require(XmlPullParser.END_TAG, env, "Body");
+        //System.out.println("55SoapEnvelope#parse : " + parser.getName());
+        
         parser.nextTag();
+        //System.out.println("66SoapEnvelope#parse : " + parser.getName());
         parser.require(XmlPullParser.END_TAG, env, "Envelope");
     }
 
-    public void parseHeader(XmlPullParser parser) throws IOException, XmlPullParserException {
+    private void parseHeader(XmlPullParser parser) throws IOException, XmlPullParserException {
         // consume start header
         parser.nextTag();
         // look at all header entries
@@ -168,38 +197,47 @@ public class SoapEnvelope {
         }
     }
 
-    public void parseBody(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.nextTag();
-        // insert fault generation code here
-        if (parser.getEventType() == XmlPullParser.START_TAG && parser.getNamespace().equals(env) && parser.getName().equals("Fault")) {
-            SoapFault fault = new SoapFault();
-            fault.parse(parser);
-            bodyIn = fault;
-        } else {
-            //Node node = (bodyIn instanceof Node) ? (Node) bodyIn : new Node();
-            //node.parse(parser);
-            //bodyIn = node;
-        	System.out.println("SoapEnve#parseBody " + parser.getText());
-            Node node = (bodyIn instanceof Node) ? (Node) bodyIn : new Node();
-            node.parse(parser);
-            bodyIn = node;
-                }
+    private void parseBody(XmlPullParser parser) throws IOException, XmlPullParserException  {
+    	//System.out.println("--parseBody is? : ");
+        try {
+	    	parser.nextTag();
+	        // insert fault generation code here
+	        if (parser.getEventType() == XmlPullParser.START_TAG && parser.getNamespace().equals(env) && parser.getName().equals("Fault")) {
+	        	SoapFault fault = new SoapFault();
+	            fault.parse(parser);
+	            bodyIn = fault;
+	        } else {
+	            //Node node = (bodyIn instanceof Node) ? (Node) bodyIn : new Node();
+	            //node.parse(parser);
+	            //bodyIn = node;
+	        	//System.out.println("SoapEnve#parseBody " + parser.getText());
+	            Node node = (bodyIn instanceof Node) ? (Node) bodyIn : new Node();
+	            node.parse(parser);
+	            bodyIn = node;
+	        }
+        } catch (XmlPullParserException ex) {
+        	ex.printStackTrace();
+        } catch (IOException ex) {
+        	ex.printStackTrace();
+        }
     }
-
+    
+    
     /**
      * Writes the complete envelope including header and body elements to the
      * given XML writer.
      */
-    public void write(XmlSerializer writer) throws IOException {
-    	writer.setPrefix("i", xsi);
-        writer.setPrefix("d", xsd);
-        writer.setPrefix("c", enc);
-        writer.setPrefix("v", env);
+    public void write(XmlSerializer writer, String namespace) throws IOException {
+    	writer.setPrefix("soapenv", env);
+    	writer.setPrefix("xsd", xsd);
+        writer.setPrefix("xsi", xsi);
+    	//writer.setPrefix("tns", namespace);
+        writer.setPrefix("enc", enc);
         writer.startTag(env, "Envelope");
-
+        
         /** add session header if already logged in */
         writer.startTag(env, "Header");
-        writeHeader(writer);
+        writeHeader(writer, namespace);
         writer.endTag(env, "Header");
         writer.startTag(env, "Body");
         
@@ -212,25 +250,60 @@ public class SoapEnvelope {
     /**
      * Writes the header elements contained in headerOut
      */
-    public void writeHeader(XmlSerializer writer) throws IOException {
+    public void writeHeader(XmlSerializer writer, String namespace) throws IOException {
     	
     	if(null == StaticInformation.SESSION_ID) return;
     	
-  //  	System.out.println("Session!");
+    	System.out.println("Session!:" + enc);
     	headerOut = new Element[1];
     	headerOut[0] = new Element();
     	
-    	writer.startTag(env, "SessionHeader");
-    		
-    	writer.attribute(StaticInformation.NAMESPACE, "mustUnderstand", "0");
+    	writer.setPrefix(meta, META);    	
 
-    		writer.startTag(env, "sessionId");
-    		//writer.attribute(SalesforceInformation.NAMESPACE, "soapenv:mustUnderstand", "0");
-    		writer.text(StaticInformation.SESSION_ID);
-    		writer.endTag(env, "sessionId");
-    		writer.endTag(env, "SessionHeader");
+    	//writer.attribute("a", "b", "c");
+    	
+    	//writer.attribute("xmlns", "ns1", META);
 
-    		headerOut[0].writeChildren(writer);
+    	/** session header */
+		String urn = "urn:enterprise.soap.sforce.com";
+    	writer.startTag(META, "SessionHeader");
+    	
+    	//writer.attribute("soapenv", "mustUnderstand", "0");
+		writer.startTag(META, "sessionId");
+		//writer.attribute("xsi", "type", "xsd:string");
+		writer.text(StaticInformation.SESSION_ID);
+		writer.endTag(META, "sessionId");
+		writer.endTag(META, "SessionHeader");
+
+		/** call option */
+		/*
+    	writer.startTag(urn, "CallOptions");
+    	
+    	writer.startTag(urn, "defaultNamespace");
+    	writer.attribute(xsi, "nil", "true");
+    	writer.endTag(urn, "defaultNamespace");
+
+    	writer.startTag(urn, "clientLog");
+    	writer.attribute(xsi, "nil", "true");
+    	writer.endTag(urn, "clientLog");
+    	
+    	writer.startTag(urn, "debugExceptions");
+    	writer.text("true");
+    	writer.endTag(urn, "debugExceptions");
+    	
+    	writer.startTag(urn, "platform");
+    	writer.attribute(xsi, "nil", "true");
+    	writer.endTag(urn, "platform");
+    	
+    	writer.startTag(urn, "remoteApplication");
+    	writer.attribute(xsi, "nil", "true");
+    	writer.endTag(urn, "remoteApplication");
+    	
+    	
+		writer.endTag(urn, "CallOptions");
+		*/
+		
+		headerOut[0].writeChildren(writer);
     	
     	/*
         if (headerOut != null) {
@@ -259,10 +332,12 @@ public class SoapEnvelope {
 //	    	System.out.println("writer : " + writer.setPrefix("hey", ""));
 	    	//writer.setPrefix("username", "kimimi");
 	    	
+	    	System.out.println("na:" + writer.getNamespace());
+	    	
 	       // ((Node) bodyOut).writeChildren(writer);
 	    	 bodyOut.writeChildren(writer);
 	    		
-	        System.out.println("HERERE4 : " + bodyOut);
+	        //System.out.println("HERERE4 : " + bodyOut);
     	} catch (IOException ex) {
     		ex.printStackTrace();
     	}

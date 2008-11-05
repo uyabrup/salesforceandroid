@@ -32,20 +32,28 @@ public class StaticInformation {
 	
 	
 	public static String SESSION_ID;
+	public static String USER_ID_18DIGITS;
 	public static String API_SERVER_URL;
+	public static String API_META_DATA_SERVER_URL;
+	
 	public static boolean isLoaded = false;
 	public static boolean isList = true;
 //	public static boolean isDetail = false;
 	
 	public static final String SOAP_ACTION = "\"\"";
-	public static final String LOGIN_SERVER_URL = "https://www.salesforce.com/services/Soap/c/13.0";
+	public static final String LOGIN_SERVER_URL = "https://www.salesforce.com/services/Soap/c/14.0";
 	public static final String NAMESPACE = "urn:enterprise.soap.sforce.com";	
 	public static final String SOBJECT_PACKAGE_NAME = "com.android.salesforce.sobject.";
+	public static final String XSD_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
 	
     public static ViewGroup MainContainer;
     
     public static String[] DOWNLOAD_SOBJECTS = { "Event", "Task", "Lead", "Account", "Contact", 
-    		"Opportunity", "Case", "ChartViewer", "BrowserViewer"};
+    		"Opportunity", "Case" /*, "ChartViewer", "BrowserViewer"*/};
     
+    public static final String METADATA_NAMESPACE = "http://soap.sforce.com/2006/04/metadata";
+	
     public static final String MASTER_RECORD_TYPE_ID = "012000000000000AAA";
+    
+    public static String vUrl = "";
 }

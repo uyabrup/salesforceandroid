@@ -7,6 +7,7 @@ package org.ksoap2.mypack.transport;
 import java.io.*;
 
 import org.ksoap2.*;
+import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.xmlpull.v1.*;
 
 import android.util.Log;
@@ -18,15 +19,17 @@ import android.util.Log;
  */
 public class AndroidHttpTransport extends Transport {
 
-	private static final String TAG = "Transport2";
+	private static final String TAG = "AndroidHttpTransport";
+	private static String namespace;
     /**
      * Creates instance of HttpTransport with set url
      * 
      * @param url
      *            the destination to POST SOAP data
      */
-    public AndroidHttpTransport(String url) {
+    public AndroidHttpTransport(String url, String namespace) {
         super(url);
+        this.namespace = namespace;
     }
 
     /**
@@ -37,13 +40,13 @@ public class AndroidHttpTransport extends Transport {
      * @param envelope
      *            the envelope containing the information for the soap call.
      */
-        public void call(String soapAction, SoapEnvelope envelope) {
+        public void call(String soapAction, SoapSerializationEnvelope envelope) {
 
     	AndroidServiceConnection connection = null;
     	try {
             soapAction = "\"\"";
 
-	        byte[] requestData = createRequestData(envelope);
+	        byte[] requestData = createRequestData(envelope, namespace);
 
 	        requestDump = debug ? new String(requestData) : null;
 	        responseDump = null;
@@ -94,7 +97,7 @@ public class AndroidHttpTransport extends Transport {
 		            Log.v(TAG, "DBG:request:" + requestDump);
 	            }
 	        }	        
-	        parseResponse(envelope, is);
+	        parseSoapResponse(envelope, is);
         } catch (IOException ex) {
         	ex.printStackTrace();
         }  catch (XmlPullParserException ex) {
@@ -104,6 +107,19 @@ public class AndroidHttpTransport extends Transport {
         }
     }
 
+        public void parseXmlAsJson(SoapSerializationEnvelope envelope, InputStream is, String ename) {
+        	try {
+    	    	parseXmlResponse(envelope, is, ename);
+    	    } catch (IOException ex) {
+    	    	ex.printStackTrace();
+    	    }  catch (XmlPullParserException ex) {
+    	    	ex.printStackTrace();
+    	    }  catch (Exception ex) {
+    	    	ex.printStackTrace();
+    	    }
+        }
+            
+        
     protected AndroidServiceConnection getServiceConnection() throws IOException {
     	return new AndroidServiceConnection(url);
     }

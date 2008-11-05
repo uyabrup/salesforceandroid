@@ -70,12 +70,15 @@ public class SObjectList extends ListActivity {
 		/** getting from records on list from temp DB */
 		List<HashMap<String, String>> myData = getRecords();
 
+		if(null == myData) return;
+		
 		ExtendedAdapter one_list_adapter = new ExtendedAdapter(this, myData,
 				R.layout.one_line_list, new String[] { "value" },
 				new int[] { R.id.one_of_oneline });
 
 		setListAdapter(one_list_adapter);
 
+		Log.v(TAG, "re_list=" + records_list.length);
 		StringBuffer temp = new StringBuffer();
 		for (String s : records_list) {
 			//autoAccs[i] = allAccs[i].substring(StaticInformation.RECORD_ID_LENGTH + 1, allAccs[i].length());
@@ -214,8 +217,11 @@ public class SObjectList extends ListActivity {
 	private List<HashMap<String, String>> getRecords() {
 		List<HashMap<String, String>> ret = new ArrayList<HashMap<String, String>>();
 		StringBuffer acc = new StringBuffer();
-		Set<Entry<String, HashMap>> se = SObjectDB.SOBJECT_DB.get(SOBJECT_TYPE).entrySet();
 		
+		// No Data
+		if(null==SObjectDB.SOBJECT_DB.get(SOBJECT_TYPE))return null;
+		Set<Entry<String, HashMap>> se = SObjectDB.SOBJECT_DB.get(SOBJECT_TYPE).entrySet();
+				
 		for (Map.Entry<String, HashMap> e : se) {
 			if(!e.getValue().get("SObjectType").equals(SOBJECT_TYPE))continue;
 			

@@ -34,7 +34,7 @@ import com.android.salesforce.util.StaticInformation;
 public class SObjectDetailInfo extends Activity {//extends SObject implements SObjectIF {
 		private static String TAG;
 		private static String SOBJECT_TYPE;
-		private static final String RELATED_LIST = "Related Lists";
+		private static final String RELATED_LIST = "";
 		public static String WebSite;
 		public static String Description;
 		public static String Phone;
@@ -219,6 +219,7 @@ public class SObjectDetailInfo extends Activity {//extends SObject implements SO
 	        
         	/** setting section header */
         	/** layout by each section */
+	        
         	LinearLayout rll = new LinearLayout(this);
             LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.FILL_PARENT,
@@ -249,7 +250,7 @@ public class SObjectDetailInfo extends Activity {//extends SObject implements SO
 	        shs = SObjectDB.SOBJECTS.get(SOBJECT_TYPE).related;
 	        for(SectionHolder sh : shs) {
 	        	
-	        	/** layout by each section */
+	        	// layout by each section 
 	        	LinearLayout ll = new LinearLayout(this);
 	            LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(
 	                    LinearLayout.LayoutParams.FILL_PARENT,
@@ -261,7 +262,7 @@ public class SObjectDetailInfo extends Activity {//extends SObject implements SO
 	        	ll.setOrientation(LinearLayout.VERTICAL);
 	            ll.setFocusable(true);
 	        	
-	        	/** setting section header */
+	        	// setting section header 
 	        	TextView sv = new TextView(this);
 	        	sv.setText(sh.name + "   >>");
 	        	sv.setTextSize(HEADER_TEXT_SIZE + 1);
@@ -287,6 +288,7 @@ public class SObjectDetailInfo extends Activity {//extends SObject implements SO
 	            layout.addView(ll);
 	        }
 	        
+	        
 		}
 	    
 		/**
@@ -295,11 +297,16 @@ public class SObjectDetailInfo extends Activity {//extends SObject implements SO
 		 * @param data
 		 * @param idp
 		 */
-		private TextView setRefIdToName(String v, TextView data, String sobject) {
+		private TextView setRefIdToName(String id, TextView data, String sobject) {
 			//idPrefix = sobject;
-        	HashMap<String, String> refid = SObjectDB.SOBJECT_DB.get(sobject).get(v);
+        	HashMap<String, String> refid = SObjectDB.SOBJECT_DB.get(sobject).get(id);
+        	if(null == refid)return new TextView(this);
+        	Log.v(TAG, "v=" + id);
+        	Log.v(TAG, "id=" + refid);
         	String name = (String)refid.get("Name");
-        	nai.put(name, v);
+        	//if(sobject.equals("Event") || sobject.equals("Task") ||sobject.equals("Event") ) name = (String)refid.get("Subject");
+        	//else name = (String)refid.get("Name");
+        	nai.put(name, id);
         	data.setTextColor(0xEE4169E1);
         	data.setOnClickListener(new View.OnClickListener() {
         		public void onClick(View vv) {

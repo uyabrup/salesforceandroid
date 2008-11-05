@@ -45,7 +45,8 @@ public class AndroidServiceConnection implements ServiceConnection {
 			host.setHost(httpURL.getHost(), httpURL.getPort(), "https");
 			connection = connectionManager.getConnection(host);
 			postMethod = new PostMethod(url);
-			Log.v(TAG, "host : " + httpURL.getHost());
+			
+			Log.v(TAG, "url : " + url);
 			Log.v(TAG, "port : " + httpURL.getPort());
 		} catch (URIException ex) {
 			ex.printStackTrace();
@@ -55,8 +56,9 @@ public class AndroidServiceConnection implements ServiceConnection {
 	public void connect() throws IOException {
 		if (!connection.isOpen()) {
 			connection.open();
+        	//connection.setSocketTimeout(1000);
 		} else {
-			Log.v(TAG, "ServiceConnectoin1 : Already Connected");
+			Log.v(TAG, "ServiceConnectoin : Already Connected");
 		}
 	}
 

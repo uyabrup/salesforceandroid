@@ -101,6 +101,27 @@ public class SoapSerializationEnvelope extends SoapEnvelope {
         }
     }
 
+    public void parseXml(XmlPullParser parser)  {
+    	try {
+        	bodyIn = null;
+        	parser.nextTag();
+            // for( ; parser.getEventType() == XmlPullParser.START_TAG; parser.nextTag() ){
+                
+            	String rootAttr = parser.getAttributeValue(enc, ROOT_LABEL);
+                Object o = read(parser, null, -1, parser.getNamespace(), parser.getName(), PropertyInfo.OBJECT_TYPE);
+                if ("1".equals(rootAttr) || bodyIn == null)
+                    bodyIn = o;
+                
+              //  System.out.println(parser.getName());
+          //  }
+
+    	} catch (IOException ex) {
+    		ex.printStackTrace();
+    	} catch (XmlPullParserException ex) {
+    		ex.printStackTrace();
+    	}
+    }
+    
     protected void readSerializable(XmlPullParser parser, KvmSerializable obj) throws IOException, XmlPullParserException {
         int testIndex = -1; // inc at beg. of loop for perf. reasons
         int propertyCount = obj.getPropertyCount();
@@ -384,7 +405,15 @@ public class SoapSerializationEnvelope extends SoapEnvelope {
         KvmSerializable ks = (KvmSerializable) bodyIn;
         return ks.getPropertyCount() == 0 ? null : ks.getProperty(0);
     }
-
+    
+    public String getResponseAsString() throws SoapFault {
+    	if(null == bodyIn)System.out.println("Body is Null");
+        if (bodyIn instanceof SoapFault) {
+        	 throw (SoapFault) bodyIn;
+        }
+        return bodyIn.toString();
+    }
+    
     /**
      * @deprecated Please use the getResponse going forward
      * @see #getResponse()

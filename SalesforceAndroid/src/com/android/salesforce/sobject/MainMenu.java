@@ -38,6 +38,7 @@ public class MainMenu extends ListActivity  {
 	
 	/** static hard code now. to be changed to set dynamically by hitting DescribeTabs */
 	 private String[] sObjects;
+	 private String json;
 	 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -45,11 +46,17 @@ public class MainMenu extends ListActivity  {
 
 		setContentView(R.layout.main_menu);
 		
+		// for temp json num
+        //Bundle bundle = getIntent().getExtras();		
+        //json = bundle.getString("json");
+		
+        
 		ListView lv = (ListView) findViewById(android.R.id.list);
 		ColorDrawable dw = new ColorDrawable(0xFFf0f8ff);
 
 		//lv.setBackgroundColor(0xDAf0f8ff);
-		lv.setDividerHeight(2);
+		lv.setDivider(dw);
+		lv.setDividerHeight(4);
 
 		TextView top = (TextView) findViewById(R.id.list_top);
 		top.setText(R.string.message_on_main_menu);
@@ -80,7 +87,10 @@ public class MainMenu extends ListActivity  {
 			//int p = (Integer) l.getItemAtPosition(position);
 			
 			Class cl;
-			if (tv.getText().equals("ChartViewer")) cl = ChartViewer.class;
+			if (tv.getText().equals("ChartViewer")) {
+				cl = ChartViewer.class;
+				intent.putExtra("json", json);
+			}
 			else if (tv.getText().equals("BrowserViewer")) cl = BrowserViewer.class;
 			else cl = SObjectList.class;
 			intent.setClass(MainMenu.this, cl);
@@ -154,7 +164,7 @@ public class MainMenu extends ListActivity  {
 			//tv.setTextColor(0xCC000000);
 			//tv.setBackgroundColor(0xEDf0f8ff);
 			
-			tv.setBackgroundColor(0xDDf0f8ff);			
+			tv.setBackgroundColor(0xDDFFFFFF);			
 			tv.setTextColor(0xFF000044);
 			addItem(data, sObjects[position], new Intent());
 
