@@ -49,7 +49,7 @@ public class DocumentViewer extends Activity implements
 	}
 
 	public void onItemSelected(AdapterView parent, View v, int position, long id) {
-		mSwitcher.setImageResource(mImageIds[position]);
+		//mSwitcher.setImageResource(mImageIds[position]);
 	}
 
 	public void onNothingSelected(AdapterView parent) {
@@ -72,7 +72,8 @@ public class DocumentViewer extends Activity implements
 		}
 
 		public int getCount() {
-			return mThumbIds.length;
+			return 0;
+			//return mThumbIds.length;
 		}
 
 		public Object getItem(int position) {
@@ -90,11 +91,11 @@ public class DocumentViewer extends Activity implements
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ImageView iv = new ImageView(mContext);
 
-			iv.setImageResource(mThumbIds[position]);
+			//iv.setImageResource(mThumbIds[position]);
 			iv.setAdjustViewBounds(true);
 			iv.setLayoutParams(new Gallery.LayoutParams(
 					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			iv.setBackgroundResource(R.drawable.picture_frame);
+			//iv.setBackgroundResource(R.drawable.picture_frame);
 			return iv;
 		}
 
@@ -113,6 +114,7 @@ public class DocumentViewer extends Activity implements
 	/** static image files
 	 *  TODO gets file via web dynamically using web services.
 	 */
+	/*
 	private Integer[] mThumbIds = { R.drawable.sample_thumb_0,
 			R.drawable.sample_thumb_1, R.drawable.sample_thumb_2,
 			R.drawable.sample_thumb_3, R.drawable.sample_thumb_4,
@@ -126,5 +128,5 @@ public class DocumentViewer extends Activity implements
 			R.drawable.sample_5, R.drawable.sample_6, R.drawable.sample_7,
 			R.drawable.sample_8, R.drawable.sample_9, R.drawable.sample_10,
 			R.drawable.sample_11 };
-
+*/
 }
