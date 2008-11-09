@@ -128,6 +128,23 @@ public class Base64 {
         return bos.toByteArray();
     }
 
+    /** Decodes the given Base64 encoded String to a new byte array. 
+    The byte array holding the decoded data is returned. */
+
+    public static String decode(String s, String enc) {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        String ret = "";
+        try {
+            decode(s, bos);
+            
+            ret = bos.toString(enc);
+        }
+        catch (IOException e) {
+            throw new RuntimeException();
+        }
+        return ret;
+    }
     public static void decode(String s, OutputStream os)
         throws IOException {
         int i = 0;
