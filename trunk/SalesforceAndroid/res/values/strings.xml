@@ -6,14 +6,26 @@
     <!-- ============================== -->
     <!--  app/search examples strings  -->
     <!-- ============================== -->
-    <string name="label_salesforce_user_id">"Id:  "</string>
-    <string name="label_salesforce_user_password">"pw: "</string>
-    <string name="label_salesforce_login">Login</string>  
-    <string name="label_salesforce_refresh">Refresh</string>
+    <string name="label_salesforce_user_id">"         id:"</string>
+    <string name="label_salesforce_user_password">"       pw:"</string>
+    <string name="label_salesforce_token">" token:"</string>
+    
+    <string name="label_salesforce_login">Login</string>
+    <string name="label_salesforce_login_help"><u>Help</u></string>
+    <string name="label_salesforce_refresh">Delete All Data</string>
+    <string name="label_salesforce_resync">Sync Data and Layout</string>
     
     <!-- Common -->
     <string name="sobject_package_name">com.android.apex.sobject.</string>
+    <string name="alert_dialog_ok">OK</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="alert_help_title">Help</string>
+    <string name="alert_help_message">Type your salesforce user id and password on each field. Upon a token field, type a token if you need on reading guide from salesforce help. 
+    === Guide >>> When accessing Salesforce from outside of your company’s trusted networks, you must add a security token to your password to log in to the API or a desktop client such as this mobile application. 
+    For security reasons, your security token is delivered to the email address associated with your account. To reset and send your security token, click the button below. 
+    You can go there via Setup | Personal Information | Reset My Security Token. Thank you very much.
     
+ 	</string>   
     <!-- Main menu -->
     <string name="message_on_main_menu">Enjoy!! Salesforce Android</string>
     <string name="sobjectname">SObjectName</string>
