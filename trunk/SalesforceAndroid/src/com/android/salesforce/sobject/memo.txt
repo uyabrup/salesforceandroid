@@ -1,1 +1,0 @@
-this package [com.android.salesforce.sobject] might be delete/changed because this app is going to use SQLite. The app wont need this classes of the package. 
