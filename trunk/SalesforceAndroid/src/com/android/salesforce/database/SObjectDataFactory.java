@@ -136,12 +136,12 @@ public class SObjectDataFactory extends Activity {
 	}
 	
 	/** write data into local file */
-	public void write(Context context, String data){
+	public void write(Context context, String fname, String data){
 		FileOutputStream fos = null;
 		byte[] outdata = Base64.decode(data);
 		
 		try {
-			fos = context.openFileOutput("data5.zip", MODE_WORLD_WRITEABLE);
+			fos = context.openFileOutput(fname, MODE_WORLD_WRITEABLE);
 			fos.write(outdata);
 			fos.close();
 		} catch (Exception ex) {
