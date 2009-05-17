@@ -13,9 +13,11 @@ import java.io.IOException;
 import java.net.URL;
 
 //import com.android.google.operation.ChartAPICaller;
-import com.android.R;
+import com.android.salesforce.operation.ApexApiCaller;
 import com.android.salesforce.util.StaticInformation;
 import com.android.salesforce.viewer.ChartViewer;
+import com.android.R;
+
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -51,113 +53,55 @@ public class VisualforceViewer extends Activity {
 	private final Handler handler = new Handler();
    private EditText urlText;
    private Button goButton;
-   private static String startURL;
+   private static String VisualforceUrl;
    
    private WebView webView;
-   private WebChromeClient chromeView;
-   private static String loadUrl;
- //  private TextView lv;
    
    private static int progressStatus = 0;
-   private static TextView adv;
-   private static TextView rcv;
    private static TextView wmg;   
+   private static TextView header;
    
    private static final String accUrl = "AccountInfo?id=0014000000IJtzv";
    private static final String chartUrl = "ChartViewer";
    
-   private static final String urlPrefix = "https://na2.salesforce.com/secur/frontdoor.jsp";
-   private static final String afrousPrefix = "https://na6.salesforce.com/secur/frontdoor.jsp";
-   
-   
+   //private static String urlPrefix = "https://na2.salesforce.com/secur/frontdoor.jsp";
+   //private static final String afrousPrefix = "https://na6.salesforce.com/secur/frontdoor.jsp";
+      
    @Override
    public void onCreate(Bundle icicle) {
       super.onCreate(icicle);
       setContentView(R.layout.web_browser);
       setTitle("Visualforce Viewer");
       
-      adv = (TextView) findViewById(R.id.account_detail_visualforce);
-      adv.setFocusableInTouchMode(true);
-      adv.setFocusable(true);
-      adv.setText(R.string.account_detail);
-      Linkify.addLinks(adv, Linkify.WEB_URLS);
-      
-      rcv = (TextView) findViewById(R.id.report_chart_visualforce);
-      rcv.setFocusableInTouchMode(true);
-      rcv.setFocusable(true);
-      rcv.setText(R.string.report_chart);
-      Linkify.addLinks(rcv, Linkify.WEB_URLS);
-      
-      wmg = (TextView) findViewById(R.id.visualforce_message);
-      
-      adv.setOnClickListener(new View.OnClickListener() {
-    	 public void onClick(View v) {
-    		 Log.v(TAG, "open Visualforce Account Detail");
-    		 wmg.setText(R.string.web_load);
-    	      
-    		 loadUrl = APEX + accUrl;
-    		 Toast.makeText(VisualforceViewer.this, "Loading Account Info Visualforce...", Toast.LENGTH_LONG).show();
-    		 processBar();
-    		 processLoad();
-    		 
-    	 }
-      });
-      
-      
-      rcv.setOnClickListener(new View.OnClickListener() {
-     	 public void onClick(View v) {
-    		 loadUrl = APEX + chartUrl;
-    		 wmg.setText(R.string.web_load);
-    	      
-    		 Toast.makeText(VisualforceViewer.this, "Loading Google Visualization API...", 6).show();
-    		 processBar();
-    		 processLoad();
-    		 
-     	 }
-       });
-       
-      
+      if(!login())return;
+		
       webView = (WebView) findViewById(R.id.web_view);
       webView.getSettings().setJavaScriptEnabled(true);
 
-      chromeView = new WebChromeClient();
-      //webView.setWebChromeClient(chromeView);
-      
-      
-      /**
-      goButton.setOnClickListener(new OnClickListener() {
-         public void onClick(View view) {
-            openBrowser();
-         }
-      });
-      urlText.setOnKeyListener(new OnKeyListener() {
-         public boolean onKey(View view, int keyCode, KeyEvent event) {
-            if (keyCode == KeyEvent.KEYCODE_ENTER) {
-               openBrowser();
-               return true;
-            }
-            return false;
-         }
-      });
-      */
+      //String url = "https://android.na3.visual.force.com/apex/VisualYouTube";
+      //url = "http://www.yahoo.co.jp/";
      // String startURL = afrousPrefix + "?un=" + StaticInformation.USER_ID + "&sid=" + StaticInformation.SESSION_ID + "&retURL=" + AFROUS;
-		Log.v(TAG, "StartURL:" + startURL);
-		initOpenBrowser(startURL);
-      
-   }
-   
-   /** initial Open Browser */
-   private void initOpenBrowser(String url) {
-	   //String startURL = "https://na3.salesforce.com/secur/frontdoor.jsp?un=dai.odahara%40google.com&sid=472200D500000007P5i!AQQAQNmx9GKk1OwRzgIGLOcZeztqyc_dpEGrTE_AKJIUoLeKcHhhwF34twk0n2QY_zStWeACNC76VCAznWbPr53ZkdaZj6qn&retURL=/apex/AccountInfo?id=0015000000HJLgLAAX";
-
-	   String startURL = urlPrefix + "?un=" + StaticInformation.USER_ID + "&sid=" + StaticInformation.SESSION_ID + "&retURL=" + APEX + chartUrl;
-	   startURL = "http://www.google.com/";
-	   webView.loadUrl(startURL);	     
+		VisualforceUrl = "https://" + StaticInformation.DOMAIN + ".salesforce.com/secur/frontdoor.jsp";		
+      //VisualforceUrl = "https://www.salesforce.com/secur/frontdoor.jsp";		
+		VisualforceUrl += "?un=" + StaticInformation.USER_ID + "&sid=" + StaticInformation.SESSION_ID;
+		//VisualforceUrl += "&retURL=https://" + StaticInformation.DOMAIN + ".salesforce.com/apex/VisualYouTube";
+		VisualforceUrl += "&retURL=" + StaticInformation.vUrl;
+			
+      	Log.v(TAG, "StartURL:" + VisualforceUrl);
+      //	VisualforceUrl = "http://www.google.com/";
+ 	   webView.setEnabled(true);
+ 	   webView.setKeepScreenOn(true);
 	   webView.requestFocus();
+	   webView.loadUrl(VisualforceUrl);
 	   processBar();
+ 	   
    }
-
    
+	private boolean login() {
+		ApexApiCaller bind = new ApexApiCaller();
+		return bind.login(StaticInformation.USER_ID, StaticInformation.USER_PW);
+	}
+	
    private void processBar() {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
@@ -173,8 +117,9 @@ public class VisualforceViewer extends Activity {
 					
 					handler.post(new Runnable() {
 						public void run() {
-							wmg.setText(R.string.web_click);
-
+							//wmg.setText(R.string.web_click);
+							header = (TextView) findViewById(R.id.dashboard1_header_title);
+							header.setText("");
 							//progress.setProgress(progressStatus);
 						}
 					});
@@ -188,6 +133,7 @@ public class VisualforceViewer extends Activity {
 		t.start();
    }
 
+   /*
 	public void processLoad() {
 
 		Thread t = new Thread(new Runnable() {
@@ -201,13 +147,12 @@ public class VisualforceViewer extends Activity {
 						}
 					});
 					//openBrowser(loadUrl);
-					startURL = urlPrefix + "?un=" + StaticInformation.USER_ID + "&sid=" + StaticInformation.SESSION_ID + "&retURL=" + loadUrl;
-					Log.v(TAG, "URL Access:" + startURL);
-					   //startURL = "/home/home.jsp";
-
+					VisualforceUrl = urlPrefix + "?un=" + StaticInformation.USER_ID + "&sid=" + StaticInformation.SESSION_ID + "&retURL=" + loadUrl;
+					Log.v(TAG, "URL Access:" + VisualforceUrl);
+				
 				    handler.post(new Runnable() {
 						public void run() {
-							webView.loadUrl(startURL);
+							webView.loadUrl(VisualforceUrl);
 							webView.requestFocus();
 							//lv.setText("");						      
 						}
@@ -221,5 +166,5 @@ public class VisualforceViewer extends Activity {
 		});
 		t.start();
 	}
-   
+   */
 }
