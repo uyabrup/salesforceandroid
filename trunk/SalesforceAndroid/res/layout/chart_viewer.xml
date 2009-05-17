@@ -8,18 +8,19 @@
 		android:layout_height="fill_parent" android:orientation="vertical">
 
 		<LinearLayout android:layout_width="wrap_content"
-			android:layout_height="fill_parent" android:orientation="horizontal">
+			android:layout_height="fill_parent"
+			android:orientation="horizontal">
 			<Button android:id="@+id/loading_button" android:text="Load"
 				android:textSize="12sp" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:layout_marginTop="20px"
 				android:layout_marginLeft="5px" android:layout_marginRight="5px" />
 			<TextView android:id="@+id/loading_title"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:layout_marginLeft="5px" 
+				android:layout_height="wrap_content" android:layout_marginLeft="5px"
 				android:layout_marginTop="20px" android:textSize="14sp"
 				android:textColor="#FF2F4F4F" android:text="" />
 		</LinearLayout>
-		
+
 		<!-- Image View -->
 		<TextView android:id="@+id/dashboard1_title"
 			android:layout_width="wrap_content"
