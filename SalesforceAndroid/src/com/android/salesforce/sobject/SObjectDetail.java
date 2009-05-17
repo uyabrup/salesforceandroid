@@ -25,12 +25,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.R;
 import com.android.salesforce.frame.FieldHolder;
 import com.android.salesforce.frame.SectionHolder;
 import com.android.salesforce.main.SalesforceAndroid;
 import com.android.salesforce.util.SObjectDB;
 import com.android.salesforce.util.StaticInformation;
+import com.android.R;
+
 
 public class SObjectDetail extends Activity {//extends SObject implements SObjectIF {
 		private static String TAG;
@@ -43,8 +44,8 @@ public class SObjectDetail extends Activity {//extends SObject implements SObjec
 		
 		private static int SECTION_WIDTH = 0;
 		
-		private static int HEADER_TEXT_SIZE = 18;
-		private static int FIELD_TEXT_SIZE = 16;
+		private static int HEADER_TEXT_SIZE = 20;
+		private static int FIELD_TEXT_SIZE = 18;
 		
 		//private static HashMap refid = new HashMap();
 		//private static String idPrefix;

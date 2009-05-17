@@ -12,12 +12,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import com.android.R;
 import com.android.salesforce.frame.FieldHolder;
 import com.android.salesforce.frame.SectionHolder;
 import com.android.salesforce.operation.ApexApiCaller;
 import com.android.salesforce.util.SObjectDB;
 import com.android.salesforce.util.StaticInformation;
+import com.android.R;
+
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -35,6 +36,7 @@ import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -58,6 +60,7 @@ public class SObjectList extends ListActivity {
 	private String[] records_list;
 	private String[] records_search;
 	private TextView listv;
+	private Button lb;
 	
 	@Override
 	protected void onCreate(Bundle icicle) {
@@ -184,10 +187,12 @@ public class SObjectList extends ListActivity {
 
 		autoCompTextView.setAdapter(adapter);
 
-		ImageView lb = (ImageView) findViewById(R.id.online_search_button);
+		lb = (Button) findViewById(R.id.online_search_button);
 		lb.setFocusable(true); lb.setFocusableInTouchMode(true);
 		lb.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
+					lb.setFocusable(false);
+					lb.setClickable(false);
 					if(et.getText().toString().length() < 2){
 						listv.setText("Type more than 2 words");
 						listv.setVisibility(0);
@@ -209,9 +214,11 @@ public class SObjectList extends ListActivity {
 				
 				handler.post(new Runnable() {
 					public void run() {
-						ImageView lb = (ImageView) findViewById(R.id.online_search_button);
+						lb = (Button) findViewById(R.id.online_search_button);
 						lb.setFocusable(false);
+						lb.setClickable(false);
 						listv.setVisibility(0);
+						listv.setText("Loading...");
 					}
 				});
 				Log.v(TAG, "Logging...");
@@ -230,8 +237,9 @@ public class SObjectList extends ListActivity {
 							init();
 						}
 						//listv.setVisibility(4);
-						ImageView lb = (ImageView) findViewById(R.id.online_search_button);
+						lb = (Button) findViewById(R.id.online_search_button);
 						lb.setFocusable(true);
+						lb.setClickable(true);
 					}
 				});
 				Looper.loop();
@@ -278,7 +286,7 @@ public class SObjectList extends ListActivity {
 				tv.setBackgroundColor(0xDDf0f8ff);
 				tv.setTextColor(0xFF000044);				
 			}
-			tv.setTextSize(18);
+			tv.setTextSize(20);
 			return tv;
 		}
 

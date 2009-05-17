@@ -61,7 +61,7 @@ public class ApexApiResultHandler {
 		String res = result.toString();
 		
 		// Extract visualforce url if any
-		String si = "Android__visualforceUrl__c=";
+		String si = "visualforceUrl__c=";
 		int ss = res.indexOf(si);
 		int es = res.indexOf(' ', ss);
 		
@@ -69,12 +69,22 @@ public class ApexApiResultHandler {
 		Log.v(TAG, "Visualforce Url :" + StaticInformation.vUrl);
 		
 		// Extract activeness flag
-		si = "Android__isActive__c=";
+		si = "isActive__c=";
 		ss = res.indexOf(si);
 		es = res.indexOf(' ', ss);
-		//StaticInformation.USER_ID_18DIGITS = res.substring(ss + si.length(), es - 1);
+		StaticInformation.isActive = Boolean.valueOf(res.substring(ss + si.length(), es - 1));
+		StaticInformation.isDandV = StaticInformation.isActive;
 		Log.v(TAG, "User Active :" + res.substring(ss + si.length(), es - 1));
-		return Boolean.valueOf(res.substring(ss + si.length(), es - 1));
+		
+		// Extract dashboard url
+		si = "dashboardUrl__c=";
+		ss = res.indexOf(si);
+		es = res.indexOf(' ', ss);
+		StaticInformation.dUrl = res.substring(ss + si.length(), es - 1);
+		Log.v(TAG, "Dashboard Url :" + StaticInformation.dUrl);
+		
+		//StaticInformation.USER_ID_18DIGITS = res.substring(ss + si.length(), es - 1);
+		return StaticInformation.isActive;
 	}
 	
 	/** extracts API server URL of salesforce force.com api */
@@ -98,6 +108,15 @@ public class ApexApiResultHandler {
 				+ res.substring(ss + si.length(), es - 1));
 		StaticInformation.API_SERVER_URL = res.substring(ss + si.length(),
 				es - 1);
+		
+		si = "https://";
+		ss = res.indexOf(si);
+		es = res.indexOf('-', ss);
+		Log.v(TAG, "\tSERVER DOMAIN : "
+				+ res.substring(ss + si.length(), es));
+		StaticInformation.DOMAIN = res.substring(ss + si.length(),
+				es);
+		
 	}
 
 	/** extracts record item name and value from soap */
@@ -150,16 +169,16 @@ public class ApexApiResultHandler {
 		
 			String[] rr = s.split("; ");
 			//Log.v(TAG, "\t\t" + "SObjectType=" + nav.get("SObjectType"));
-			
+			int index = 0;
 			for(String r : rr) {
 				// 1st arg is value, 2nd arg is value
 				String[] tt = r.split("=");
-				//Log.v(TAG, "\t" + tt[0] + "=" + tt[1]+ on );
+				//Log.v(TAG, "\t" + index++ + "\t" + tt[0] + "=" + tt[1]+ on );
 
 				if(refTypeField.contains(tt[0]))setQueryWherePool(tt[1]);				
 
-				nav.put(tt[0], tt[1]+ on );
-				cv.put(tt[0], tt[1]+ on );
+				nav.put(tt[0], tt[1]+ on);
+				cv.put(tt[0], tt[1]+ on);
 			}
 			//insertData.add(cv);
 			

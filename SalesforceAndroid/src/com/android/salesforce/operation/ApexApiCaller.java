@@ -58,6 +58,9 @@ public class ApexApiCaller {
 
 	/** login method */
 	public boolean login() {
+		return login("", "");
+	}
+	public boolean login(String id, String pw) {
 		boolean ret = false;
 		try {
 			Log.v(TAG, "Logging...");
@@ -65,8 +68,10 @@ public class ApexApiCaller {
 			//Log.v(TAG, "pw : " + StaticInformation.USER_PW);
 
 			binding = new SoapObject(StaticInformation.NAMESPACE, "login");
-			binding.addProperty("username", StaticInformation.USER_ID);
-			binding.addProperty("password", StaticInformation.USER_PW + StaticInformation.USER_TOKEN);
+			binding.addProperty("username", 
+					id.length() == 0 ? StaticInformation.USER_ID : id);
+			binding.addProperty("password", 
+					pw.length() == 0 ? (StaticInformation.USER_PW + StaticInformation.USER_TOKEN) : pw);
 
 			envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
 			envelope.setOutputSoapObject(binding);
@@ -75,7 +80,6 @@ public class ApexApiCaller {
 					StaticInformation.LOGIN_SERVER_URL,
 					StaticInformation.NAMESPACE);
 			androidHttpTransport.call(StaticInformation.SOAP_ACTION, envelope);
-
 			
 			Object result = envelope.getResponse();
 
@@ -395,7 +399,7 @@ public class ApexApiCaller {
 			binding = new SoapObject(StaticInformation.NAMESPACE, "query");
 
 			//String select = "SELECT Id, Name, Android__User__r.Id, Android__visualforceUrl__c ,Android__isActive__c FROM Android__AndroidUserManagement__c WHERE Android__User__r.Id='" + StaticInformation.USER_ID_18DIGITS + "'";
-			String select = "SELECT Id, Name, Android__User__r.Id, Android__visualforceUrl__c ,Android__isActive__c FROM Android__AndroidUserManagement__c WHERE Android__User__r.Id='" + StaticInformation.USER_ID_18DIGITS + "'";
+			String select = "SELECT Id, Name, androidUser__r.Id, visualforceUrl__c, dashboardUrl__c, isActive__c FROM AndroidUserManagement__c WHERE androidUser__r.Id='" + StaticInformation.USER_ID_18DIGITS + "'";
 
 			binding.addProperty("queryString", select);
 			
@@ -681,11 +685,9 @@ public class ApexApiCaller {
 			binding = new SoapObject(StaticInformation.NAMESPACE, "query");
 			
 			ArrayList<String> qf = new ArrayList<String>();
-			//String q = qf.toString();
+			qf.add("Id");qf.add("Name");qf.add("Title"); qf.add("Email");qf.add("Username");
 			
-			qf.add("Id");qf.add("Name");qf.add("Title"); qf.add("Email");
-			
-			String where = "";
+			String where = " WHERE Username='" + StaticInformation.USER_ID + "'";
 			String limit = "";
 			Log.v(TAG, "LIMIT :" + limit);
 			
