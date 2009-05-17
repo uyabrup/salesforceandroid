@@ -1,8 +1,6 @@
 package org.ksoap2.exception;
 
-import org.apache.commons.httpclient.URIException;
-
-public class Ksoap2Exception extends URIException {
+public class Ksoap2Exception extends Exception {
 	private static final long serialVersionUID = 1L;
 	private String str_;
 	public Ksoap2Exception(String str) {

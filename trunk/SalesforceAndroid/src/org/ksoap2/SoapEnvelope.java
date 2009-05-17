@@ -26,7 +26,10 @@ import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 //import org.kxml2.kdom.*;
+import android.util.Log;
+
 import com.android.salesforce.util.StaticInformation;
+
 import org.xmlpull.v1.*;
 import org.kxml2.mypack.*;
 import org.kxml2.mypack.xml.Element;
@@ -67,7 +70,7 @@ public class SoapEnvelope {
     public static final String XSI1999 = "http://www.w3.org/1999/XMLSchema-instance";
     
    // public static final String METADATA_TNS = "http://soap.sforce.com/2006/04/metadata";
-    
+    private static final String TAG = "SoapEnvelope";
     
     /**
      * Returns true for the string values "1" and "true", ignoring upper/lower
@@ -154,7 +157,7 @@ public class SoapEnvelope {
         encodingStyle = parser.getAttributeValue(env, "encodingStyle");
         parser.nextTag();
         //if (parser.getEventType() == XmlPullParser.START_TAG && parser.getNamespace().equals(env) && parser.getName().equals("Header")) {
-        //System.out.println("Header is? : " + parser.getName());
+        //Log.v(TAG, "Header is? : " + parser.getName());
         if (parser.getName().equals("Header")) {
             
         	parser.require(XmlPullParser.START_TAG, env, "Header");
@@ -162,7 +165,7 @@ public class SoapEnvelope {
             parser.require(XmlPullParser.END_TAG, env, "Header");
             parser.nextTag();
         }
-        //System.out.println("33Header is? : " + parser.getName());
+        //Log.v(TAG, "33Header is? : " + parser.getName());
         parser.require(XmlPullParser.START_TAG, env, "Body");
         encodingStyle = parser.getAttributeValue(env, "encodingStyle");
         //System.out.println("22SoapEnvelope#parse : " + parser.getName());
@@ -172,7 +175,7 @@ public class SoapEnvelope {
         //System.out.println("55SoapEnvelope#parse : " + parser.getName());
         
         parser.nextTag();
-        //System.out.println("66SoapEnvelope#parse : " + parser.getName());
+        //Log.v(TAG, "66SoapEnvelope#parse : " + parser.getName());
         parser.require(XmlPullParser.END_TAG, env, "Envelope");
     }
 
@@ -260,10 +263,6 @@ public class SoapEnvelope {
     	
     	writer.setPrefix(meta, META);    	
 
-    	//writer.attribute("a", "b", "c");
-    	
-    	//writer.attribute("xmlns", "ns1", META);
-
     	/** session header */
 		String urn = "urn:enterprise.soap.sforce.com";
     	writer.startTag(META, "SessionHeader");
@@ -305,13 +304,6 @@ public class SoapEnvelope {
 		
 		headerOut[0].writeChildren(writer);
     	
-    	/*
-        if (headerOut != null) {
-            for (int i = 0; i < headerOut.length; i++) {
-                headerOut[i].write(writer);
-            }
-        }
-        */
     }
 
     /**

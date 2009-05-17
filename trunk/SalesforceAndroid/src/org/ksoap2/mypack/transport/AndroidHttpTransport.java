@@ -50,60 +50,17 @@ public class AndroidHttpTransport extends Transport {
 
 	        requestDump = debug ? new String(requestData) : null;
 	        responseDump = null;
-
-	        connection = getServiceConnection();
-	        connection.connect();
-
-	        connection.setRequestProperty("User-Agent", "SalesforceAndroid");
-	        connection.setRequestProperty("SOAPAction", soapAction);	        
-	        connection.setRequestProperty("Content-Type", "text/xml");
-	        connection.setRequestProperty("Connection", "keep-alive");
-	        connection.setRequestProperty("Content-Length", "" + requestData.length);
-	        connection.setRequestMethod("POST");
 	        
-	        OutputStream os = connection.openOutputStream();
-	        os.write(requestData, 0, requestData.length);
-	        os.flush();
-	        os.close();
-
-	        InputStream is;
-	        try {
-	            is = connection.openInputStream();
-	        } catch (IOException e) {
-	            is = connection.getErrorStream();
-	            if (is == null) {
-	                connection.disconnect();
-	                throw (e);
-	            }
-	        }
-
-	        boolean flag = true;
-	        if (flag) {
-	            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	            byte[] buf = new byte[256];
-	            while (true) {
-	                int rd = is.read(buf, 0, 256);
-	                if (rd == -1)
-	                    break;
-	                bos.write(buf, 0, rd);
-	            }
-	            bos.flush();
-	            buf = bos.toByteArray();
-	            responseDump = new String(buf);
-	            is.close();
-
-	            is = new ByteArrayInputStream(buf);
-	            if (flag) {
-		            Log.v(TAG, "DBG:request:" + requestDump);
-	            }
-	        }	        
-	        parseSoapResponse(envelope, is);
+	        connection = new AndroidServiceConnection(url, envelope, requestData);
+	           
+	        parseSoapResponse(envelope, connection.getInputStream());
+	        
         } catch (IOException ex) {
         	ex.printStackTrace();
-        }  catch (XmlPullParserException ex) {
+        }  catch (Exception ex) {
         	ex.printStackTrace();
         }  finally {
-        	connection.disconnect();
+        	//connection.disconnect();
         }
     }
 
@@ -117,11 +74,5 @@ public class AndroidHttpTransport extends Transport {
     	    }  catch (Exception ex) {
     	    	ex.printStackTrace();
     	    }
-        }
-            
-        
-    protected AndroidServiceConnection getServiceConnection() throws IOException {
-    	return new AndroidServiceConnection(url);
-    }
-
+        }            
 }

@@ -103,7 +103,7 @@ abstract public class Transport {
         bos.write('\r');
         bos.write('\n');
         bos.flush();
-        Log.v(TAG, "createRequestData : " + bos);
+       // Log.v(TAG, "createRequestData : " + bos);
 
         return bos.toByteArray();
     }
