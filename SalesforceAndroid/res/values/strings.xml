@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Salesforce Android</string>
+    <string name="app_name">Google Android for Salesforce</string>
     <string name="main_menu">Main Menu</string>
     <string name="menu_sfdc_login">Salesforce Login</string>
     <!-- ============================== -->
@@ -11,21 +11,22 @@
     <string name="label_salesforce_token">" token:"</string>
     
     <string name="label_salesforce_login">Login</string>
-    <string name="label_salesforce_login_help"><u>Help</u></string>
+    <string name="label_salesforce_login_help"><u>You cant login?</u></string>
     <string name="label_salesforce_refresh">Delete All Data</string>
     <string name="label_salesforce_resync">Sync Data and Layout</string>
+    <string name="label_salesforce_login_menu">Go to Login Menu</string>
+
+    <string name="label_demo_checkbox">See Demo?</string>
+    <string name="label_demo_login">Click Login!!</string>
     
     <!-- Common -->
     <string name="sobject_package_name">com.android.apex.sobject.</string>
     <string name="alert_dialog_ok">OK</string>
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="alert_help_title">Help</string>
-    <string name="alert_help_message">Type your salesforce user id and password on each field. Upon a token field, type a token if you need on reading guide from salesforce help. 
-    === Guide >>> When accessing Salesforce from outside of your company’s trusted networks, you must add a security token to your password to log in to the API or a desktop client such as this mobile application. 
-    For security reasons, your security token is delivered to the email address associated with your account. To reset and send your security token, click the button below. 
-    You can go there via Setup | Personal Information | Reset My Security Token. Thank you very much.
-    
+    <string name="alert_help_message">Type your salesforce user id and password on each field correctly. And you have to set IP address ranges of your mobile in advance unless you see login error. In order to know whehter you have to set up IP addressed, go to Setup | Personal Information | Login History. The error is ip security matter, which means you have to set up IP addresses. Thank you very much.    
  	</string>   
+    <string name="go_to_home_menu">Home</string>    
     <!-- Main menu -->
     <string name="message_on_main_menu">Enjoy!! Salesforce Android</string>
     <string name="sobjectname">SObjectName</string>
@@ -52,6 +53,13 @@
 	<string name="event_info">Event Detail</string>
 	<string name="acc_info">Account Detail</string>
 	<string name="opp_info">Opportunity Detail</string>
+	
+	<!-- WebView Message -->
+	<string name="account_detail"><u>Account Detail</u></string>
+	<string name="report_chart"><u>Report/Chart</u></string>
+	<string name="web_click">Click >></string>
+	<string name="web_load">Loading...</string>
+	
 	    
     <!-- forwarding target -->
     <string name="forwarding_target">Fowarding Target</string>
@@ -76,4 +84,8 @@
     <string name="error_title">Error</string>
     <string name="error_message">Error loading note</string>
     
+    <!-- for calendar samples to be dateled when "DataWidget1.java, dataWidget2.java have been deleted -->
+    <string name="date_widgets_example_dateDisplay_text"></string>
+    <string name="date_widgets_example_pickTime_text">change the time</string>
+    <string name="date_widgets_example_pickDate_text">change the date</string>
 </resources>
