@@ -10,10 +10,8 @@
 		android:background="#226495ed">
 
 		<ImageButton android:layout_width="wrap_content"
-		 	android:id="@+id/to_home_button"
-			android:layout_height="45dip"
-			android:paddingRight="20dip"
-			android:src="@drawable/arrow_to_home" />
+			android:id="@+id/to_home_button" android:layout_height="45dip"
+			android:paddingRight="20dip" android:src="@drawable/arrow_to_home" />
 
 		<LinearLayout android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:gravity="center">
@@ -28,9 +26,9 @@
 		</LinearLayout>
 
 		<!-- 
-		<ImageButton android:layout_width="wrap_content"
+			<ImageButton android:layout_width="wrap_content"
 			android:layout_height="45dip" android:src="@drawable/action" />
-			-->
+		-->
 	</LinearLayout>
 
 	<ScrollView android:layout_width="fill_parent"
@@ -43,27 +41,27 @@
 			android:layout_height="wrap_content">
 
 			<!-- 
-								<TextView
+				<TextView
 				android:id="@+id/item_label"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:textSize="15px"	
 				android:textColor="#FF708090"		        
 				android:text="Test"/>
-								<TextView
+				<TextView
 				android:id="@+id/item_label"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:textSize="15px"			        
 				android:text="Test"/>
-								<TextView
+				<TextView
 				android:id="@+id/item_label"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:textSize="15px"
-								android:textColor="#FF708091"	        
+				android:textColor="#FF708091"	        
 				android:text="Test"/>
-			
+				
 				<TextView
 				android:id="@+id/item_value"
 				android:layout_width="fill_parent"

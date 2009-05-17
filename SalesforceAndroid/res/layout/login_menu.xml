@@ -1,108 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/login_container"
-	android:layout_width="fill_parent" android:orientation="vertical"
-	android:background="#EFFFFEFE" android:layout_height="fill_parent">
+	android:id="@+id/login_container" android:layout_width="fill_parent"
+	android:orientation="vertical" android:background="#FFFFFFFF"
+	android:layout_height="fill_parent">
+	<!-- android:background="#EFFFFEFE" -->
 
-	<!-- 
-	<ProgressBar android:id="@+id/progress_bar"
-		style="?android:attr/progressBarStyleHorizontal"
-		android:layout_width="fill_parent" android:layout_height="30px"
-		android:max="100" android:progress="30" />
-		-->
-		
-	<!-- Image View   -->
-	<!-- 
-	<ImageView android:layout_width="125px" android:layout_height="38px"
-		android:paddingLeft="10px" android:layout_marginTop="10px"
-		android:paddingBottom="0px" android:src="@drawable/salesforce" />
- -->
-
-	<LinearLayout android:orientation="vertical"
-		android:layout_width="fill_parent" android:gravity="right|center_vertical"
-		android:layout_height="wrap_content" android:layout_marginTop="10px"
-		android:layout_marginBottom="0px" android:layout_marginRight="10px">
-		<TextView android:textStyle="bold" android:textSize="12px"
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:textColor="#FF000033"
-				android:id="@+id/salesforce_login_help" android:text="@string/label_salesforce_login_help" />
-	</LinearLayout>
-
-	<!-- Id/Pw Edit Text -->
-	<LinearLayout android:orientation="vertical"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:layout_marginTop="5px"
-		android:layout_marginBottom="5px">
-
-		<LinearLayout android:layout_width="fill_parent"
+	<ScrollView android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<LinearLayout android:orientation="vertical"
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content">
-			<TextView android:textStyle="bold" android:textSize="12px"
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:textColor="#000000"
-				android:text="@string/label_salesforce_user_id" />
-			<EditText android:id="@+id/salesforce_user_id"
+
+			<ImageView android:layout_width="125px"
+				android:layout_height="38px" android:layout_marginLeft="10px"
+				android:layout_marginTop="20px" android:paddingBottom="0px"
+				android:src="@drawable/salesforce_png_mini" />
+
+			<LinearLayout android:orientation="vertical"
+				android:layout_width="fill_parent" android:gravity="right"
+				android:id="@+id/salesforce_login_help_bar"
+				android:layout_height="wrap_content" android:layout_marginTop="0px"
+				android:layout_marginBottom="0px" android:layout_marginLeft="0px"
+				android:layout_marginRight="10px">
+				<TextView android:textStyle="bold"
+					android:textSize="14px" android:layout_height="wrap_content"
+					android:layout_width="wrap_content" android:textColor="#FF000033"
+					android:id="@+id/salesforce_login_help"
+					android:text="@string/label_salesforce_login_help" />
+			</LinearLayout>
+
+			<!-- Id/Pw Edit Text -->
+			<LinearLayout android:orientation="vertical"
 				android:layout_width="fill_parent"
-				android:layout_height="wrap_content" android:textSize="16px"
-				android:textColor="#FF000000" android:maxEms="25"
-				android:minEms="12" />
-		</LinearLayout>
-		<LinearLayout android:layout_width="fill_parent"
-			android:layout_height="wrap_content">
-			<TextView android:textStyle="bold" android:textSize="12px"
+				android:layout_height="wrap_content" android:layout_marginTop="5px"
+				android:layout_marginBottom="5px">
+
+				<LinearLayout android:layout_width="fill_parent"
+					android:layout_height="wrap_content">
+					<TextView android:textStyle="bold"
+						android:textSize="13px" android:layout_height="wrap_content"
+						android:layout_width="wrap_content" android:textColor="#000000"
+						android:text="@string/label_salesforce_user_id" />
+					<EditText android:id="@+id/salesforce_user_id"
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content" android:textSize="16px"
+						android:textColor="#FF000000" android:maxEms="25"
+						android:minEms="12" />
+				</LinearLayout>
+				<LinearLayout android:layout_width="fill_parent"
+					android:layout_height="wrap_content">
+					<TextView android:textStyle="bold"
+						android:textSize="13px" android:layout_height="wrap_content"
+						android:layout_width="wrap_content" android:textColor="#000000"
+						android:text="@string/label_salesforce_user_password" />
+					<EditText android:id="@+id/salesforce_user_password"
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content" android:textSize="16px"
+						android:textColor="#FF000000" android:maxEms="25"
+						android:minEms="12" />
+				</LinearLayout>
+			</LinearLayout>
+
+			<!-- Text Switcher -->
+
+			<LinearLayout android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:textColor="#000000"
-				android:text="@string/label_salesforce_user_password" />
-			<EditText android:id="@+id/salesforce_user_password"
+				android:gravity="center_horizontal|center_vertical">
+				<TextView android:id="@+id/switcher"
+					android:textSize="16px" android:textColor="#FF000000"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_centerHorizontal="true" android:text="Autenticationg..."
+					android:layout_marginTop="5px" android:layout_marginBottom="10px" />
+			</LinearLayout>
+
+			<!-- Login/Cancel Button -->
+
+			<LinearLayout android:orientation="horizontal"
+				android:gravity="center_horizontal|center_vertical"
 				android:layout_width="fill_parent"
-				android:layout_height="wrap_content" android:textSize="16px"
-				android:textColor="#FF000000" android:maxEms="25"
-				android:minEms="12" />
+				android:layout_height="fill_parent"
+				android:layout_marginBottom="5px" android:layout_marginTop="5px">
+				<Button android:id="@+id/salesforce_login"
+					android:text="@string/label_salesforce_login"
+					android:textSize="14sp" android:layout_width="80px"
+					android:layout_height="wrap_content" android:layout_marginTop="5px"
+					android:layout_marginLeft="5px" android:layout_marginRight="5px"
+					android:layout_marginBottom="5px" />
+				<!-- 
+					<Button android:id="@+id/salesforce_cancel"
+					android:text="Cancel" android:textSize="14sp"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:layout_marginTop="5px"
+					android:layout_marginLeft="5px" android:layout_marginRight="5px"
+					android:layout_marginBottom="5px" />
+				-->
+				<CheckBox android:id="@+id/demo_checkbox"
+					android:text="@string/label_demo_checkbox"
+					android:textColor="#DD111111" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+			</LinearLayout>
+			
+			<ImageView android:id="@+id/sample_dashboard" android:layout_height="50px"
+				android:layout_marginLeft="10px" android:layout_width="50px"
+				android:layout_marginTop="10px" android:paddingBottom="0px"
+				 />
+			
+			<WebView android:id="@+id/login_sub_web_view"
+				android:layout_width="0px"
+				android:layout_height="0px" android:layout_weight="1.0" />
+			<WebView android:id="@+id/login_main_web_view"
+				android:layout_width="0px"
+				android:layout_height="0px" android:layout_weight="1.0" />
+				
 		</LinearLayout>
-		<LinearLayout android:layout_width="fill_parent"
-			android:layout_height="wrap_content">
-			<TextView android:textStyle="bold" android:textSize="12px"
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:textColor="#000000"
-				android:text="@string/label_salesforce_token" />
-			<EditText android:id="@+id/salesforce_user_token"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content" android:textSize="16px"
-				android:textColor="#FF000000" android:maxEms="25"
-				android:minEms="12" />
-		</LinearLayout>
-	</LinearLayout>
-
-	<!-- Text Switcher -->
-
-	<LinearLayout android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:gravity="center_horizontal|center_vertical">
-		<TextView android:id="@+id/switcher" android:textSize="16px"
-			android:textColor="#FF000000" android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerHorizontal="true"
-			android:layout_marginTop="5px" android:layout_marginBottom="10px" />
-	</LinearLayout>
-
-
-	<!-- Login/Cancel Button -->
-	<LinearLayout android:orientation="horizontal"
-		android:gravity="center_horizontal|center_vertical"
-		android:layout_width="fill_parent" android:layout_height="fill_parent"
-		android:layout_marginBottom="5px">
-		<Button android:id="@+id/salesforce_login"
-			android:text="@string/label_salesforce_login" android:textSize="14sp"
-			android:layout_width="80px" android:layout_height="wrap_content"
-			android:layout_marginTop="5px" android:layout_marginLeft="5px"
-			android:layout_marginRight="5px" android:layout_marginBottom="5px" />
-		<Button android:id="@+id/salesforce_cancel"
-			android:text="Cancel" android:textSize="14sp"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:layout_marginTop="5px"
-			android:layout_marginLeft="5px" android:layout_marginRight="5px"
-			android:layout_marginBottom="5px" />
-	</LinearLayout>
-
-
+	</ScrollView>
 
 </LinearLayout>
